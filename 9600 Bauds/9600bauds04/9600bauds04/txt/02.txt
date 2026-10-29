@@ -1,0 +1,810 @@
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   
+
+┌──────────────────────────────────┐
+│ ISSUE No 4 - Juillet 2026 02.TXT └───────────────────────────────────────────┐
+| Bypass Livebox Orange                                                        |
+| Miizix <miizix@mzx.fr>                                                       |
+| HACKGYVER HACKERSPACE (Belfort)                                              |
+└──────────────────────────────────────────────────────────────────────────────┘⠀
+
+-- 0x0: Intro --
+
+\o/ ici Miizix, du HackGyver.
+
+Lors d'un précédent projet au sein de notre hackerspace, nous avons traités
+théoriquement la sécurisation de notre réseau domestique. En passant par
+l'identification appareils exposés à Internet, la compréhension des outils
+utilisés par les attaquants, les protections physiques/logicielles addaptées
+et la mise en place de VLAN. Nous avons classés les niveaux de sécurité
+par paranoïa.
+
+Aujourd'hui, on va mettre les mains dans la technique avec le bypass du routeur
+d'Orange par le notre sous OpenWrt.
+
+Au sommaire de cet article:
+
+* 0x1: Choisir son matériel
+* 0x2: Identifier sa techno fibre
+* 0x3: Configuration du WAS110
+* 0x4: Configuration du Huawei MA5671A
+* 0x5: Installation OpenWrt
+* 0x6: Segmentation réseau
+* 0x7: Vue finale de la config
+* 0x8: Conclusion
+
+
+-- 0x1: Choisir son matériel --
+
+Avant toute chose, il va nous falloir du matos.
+
+Après quelques comparatifs des mini-pc, des routeurs MikroTik et autres...
+J'ai choisis de prendre un Banana Pi 4, une belle bête sous OpenWrt.
+
+Il dispose d'un processur MediaTek MT7988A (Filogic 880), architecture ARM
+Cortex-A73 quad-cœur, de  4 Go ou 8 Go de RAM DDR4, 8 Go d’eMMC et 128 Mo
+de flash SPI-NAND.
+
+Pour la connectique, on a 2 ports SFP+ 10 GbE, 4 ports Gigabit Ethernet,
+un port USB 3.2 ainsi qu'un slot SDcard.
+Et en supplémant, un support M.2 pour modules 4G/5G ou SSD NVMe.
+
+Liste du matériel:
+
++-----+----------------------------------------+
+| No. | Équipement                             |
++-----+----------------------------------------+
+| 1   | Banana Pi BPI-R4-8G (~100€)            |
+| 2   | Dissipateur thermique BPI-R4 (~5€)     |
+| 3   | Boitier aluminium BPI-R4 (~13€)        |
+| 4   | Huawei MA5671A (GPON) (~30/35€)        |
+| 5   | WAS110 (XGS-PON) (~140€)               |
++-----+----------------------------------------+
+
+Liens:
+
+[1] https://fr.aliexpress.com/item/1005006256712337.html
+[2] https://fr.aliexpress.com/item/1005007083587135.html
+[3] https://fr.aliexpress.com/item/1005006860115391.html
+[4] https://fr.aliexpress.com/item/1005007198047818.html
+[5] https://fr.aliexpress.com/item/1005007856556526.html
+
+
+-- 0x2: Identifier sa techno fibre --
+
+Avant de commander votre module SFP, vous devez identifier votre technologie
+réseau. Il va falloir se rendre sur la carte de couverture fibre d'Orange
+https://reseaux.orange.fr/les-cartes-de-couverture/carte-de-couverture-
+fibre, saisissez votre adresse et vérifiez la mention affichée:
+
+Fibre: Vous êtes en GPON (débit max ~2.5 Gbps).
+XGS-PON: Vous êtes sur la nouvelle technologie (débit max ~10 Gbps).
+
+Le PON n'a rien à voir avec le pont à base d'anis, le PON (Passive Optical
+Network) est un réseau optique passif avec une architecture
+point-à-multipoint. Il se compose d'un OLT (chez l'opérateur), d'un ONU/ONT
+(votre module SFP) et de splitters passifs.
+
+Le GPON (Gigabit-capable PON) est le standard le plus répandu (~2.5 Gbps).
+Il supporte le Triple-play (Internet, TV, Téléphone) avec une très bonne
+efficacité et un chiffrement AES natif.
+
+Enfin, le XGS-PON est l'évolution 10 Gigabit, avec des débits symétriques
+bien plus élevés.
+
+Fun fact, je pensais être en XGS-PON et j'ai donc commandé trop rapidement
+un WAS110. Finalement, ma ligne est en GPON. Pas d'inquiétude, si vous êtes
+réellement en XGS-PON, j'ai tout de même troubleshoot le module et la
+configuration reste globalement identique !
+
+Vous êtes en XGS-PON (10G)
+
+Le module star est le WAS110. Il est indispensable d'utiliser le firmware
+custom "8311".
+
+C'est l'ONU le plus avancé, il bénéficie d'une énorme communauté, d'un support
+actif et de corrections constantes pour s'adapter aux différents opérateurs
+mondiaux.
+Retrouvez le d'achat et de conf sur https://akhamar.github.io/orange-xgs-pon/
+
+Vous êtes en GPON (2.5G)
+
+Bon après mes péripéties, j'ai donc pris un SFP GPON, le Huawei MA5671A.
+
+Le module est dispo sur AliExpress pour une trentaine d'euros.
+
+L'ONT Leox LXT-010H-D est une alternative reconnue, une excellente référence
+dans la communauté.
+
+
+-- 0x3: Configuration du WAS110 --
+
+Cette section concerne le WAS110 avec le firmware 8311 déjà préinstallé.
+Si ce n'est pas encore le cas, vous allez devoir le flasher.
+
+D'ailleurs, 8311 est l'écriture leetspeak de BELL en référence à Alexander
+Graham Bell, inventeur du téléphone, et au réseau de télécommunications qu'il
+a fondé, dont sont issus les célèbres Baby Bells, incluant Bell Canada.
+
+Avant de débrancher quoi que ce soit, on va soutirer un maximum
+d'informations à la Livebox.
+Prenez des screenshots de tout. Ça vous fera gagner un temps précieux si vous
+avez oublié de noter une info.
+
+Connectez-vous à l'interface d'administration de la livebox, les creds par
+défauts sont: admin ainsi que les 6 premiers caractères du mdp Wi-Fi.
+
+Se rendre dans dans Paramètres avancés -> Informations système et faites des
+screenshots des pages suivantes:
+
+Général - infos globales de la box
+Internet - paramètres de connexion
+ONT - les infos critiques pour le bypass
+VoIP - notez votre numéro de ligne fixe, ça servira plus tard
+
+Les valeurs que vous allez injecter dans le WAS110 sont:
+Serial Number de l'ONT
+Equipment ID
+Hardware Version
+Versions des softwares (sw_verA et sw_verB)
+
+Branchement et accès au WAS110
+
+Branchez le WAS110 dans un switch compatible SFP+ ou directement dans le
+Banana Pi.
+Reliez votre PC au switch/routeur en RJ45.
+Configurez votre carte réseau en IP fixe:
+
+IP: 192.168.1.2
+Masque: 255.255.255.0
+Passerelle: 192.168.1.1
+
+Testez le ping vers l'ONT: ping 192.168.1.10
+
+Si ça répond, l'ONT est joignable.
+
+Configurer l'identité de l'ONT
+
+Connectez-vous en SSH:
+
+ssh root@192.168.1.10 # Pas de mot de passe par défaut
+
+Injectez ensuite les infos récupérées depuis la Livebox (adaptez avec vos
+propres valeurs bien sûr):
+
+fwenv_set -8 gpon_sn SMBS.....
+fwenv_set -8 equipment_id SagemcomFast5670EOFR
+fwenv_set -8 hw_ver SMBSSGLB6106
+fwenv_set -8 cp_hw_ver_sync 1
+fwenv_set -8 sw_verA SAHEOFR070102
+fwenv_set -8 sw_verB SAHEOFR070203
+fwenv_set -8 fix_vlans 0
+
+Si vous n'êtes pas à l'aise en CLI, l'interface web du firmware 8311 est
+disponible sur 192.168.1.10 et permet de faire exactement la même chose via
+votre navigateur préféré.
+
+Changez le mot de passe root par défaut pour un mot de passe fort dès
+maintenant.
+
+Fixer les VLANs
+
+Dans l'interface web, rendez-vous dans la section ISP Fixes et décochez Fix
+VLANs, puis sauvegardez.
+
+Troubleshooting: Tx fault
+
+En théorie, c'est tout ce qu'il faut faire. En pratique... j'ai galéré.
+
+En branchant le WAS110 dans le Banana Pi, OpenWrt remontait une erreur Tx
+fault dans les logs système et désactivait le port SFP.
+
+[Mar 2, 2026, 12:52:37 PM UTC] kern.info: [ 358.881756] sfp sfp1:
+module H-COM
+[Mar 2, 2026, 12:52:37 PM UTC] kern.info: [ 358.921616] hwmon hwmon2:
+temp1_input not attached to any thermal zone
+[Mar 2, 2026, 12:52:37 PM UTC] kern.err: [ 359.210690] sfp sfp1:
+module transmit fault indicated
+[Mar 2, 2026, 12:52:43 PM UTC] kern.err: [ 364.620693] sfp sfp1:
+module persistently indicates fault, disabling
+
+Les réglages de base
+
+Première chose à vérifier, depuis l'interface web du firmware 8311,
+désactivez le Tx Fault et la Serial Connection. Si vous avez suivi la config
+ci-dessus, c'est normalement déjà fait. Sinon, ça se fait aussi en SSH.
+
+Si ça ne suffit pas, on rentre dans le dur.
+
+Lire l'EEPROM du SFP
+
+Récupérez le contenu de l'EEPROM du module en base64:
+
+cat /sys/class/pon_mbox/pon_mbox0/device/eeprom50 | base64
+
+Installez ensuite l'outil de parsing et le script eeprom-vendor.js
+https://github.com/up-n-atom/8311/pull/60/commits/
+76d6cac24964cd95db625c327a5918494149c7f2#diff-
+f6ea92fc12e1775ca5da1c74abeb89a3cb4317448a1d78bec74f58e310869168
+
+pip3 install py-sfp-eeprom
+
+Lancez le script modify.py, collez le résultat base64 et validez. Il va
+générer les commandes i2cset adaptées à votre module, par exemple:
+
+i2cset -fy 0 0x51 0x7B 0x91 0x42 0xF0 0x07 i # Unlock écriture
+i2cset -fy 0 0x50 0xc8 i
+i2cset -fy 0 0x50 0x20 i
+i2cset -fy 0 0x50 0x2d i
+i2cset -fy 0 0x50 0x00 0xf5 i
+i2cset -fy 0 0x50 0x30 0x30 i
+i2cset -fy 0 0x50 0x05 0x1a i
+i2cset -fy 0 0x51 0x7B 0x00 0x00 0x00 0x00 i # Lock écriture
+
+Un reboot, et le port SFP devrait enfin remonter correctement.
+
+Ce script a été écrit par MshBidb pour m'aider à débloquer ma situation.
+Il a ensuite été intégrée via une pull request acceptée et fait maintenant
+partie du firmware 8311 officiellement: eeprom-vendor.js — firmware 8311
+(GitHub)
+
+
+-- 0x4: Configuration du Huawei MA5671A --
+
+Suite à mon erreur de diagnostic sur la technologie de ma ligne (GPON et non
+XGS-PON), j'ai dû me rabattre sur le classique Huawei MA5671A. Moins cher,
+pas la même technologie mais tout aussi efficace.
+
+Le module a été livré avec le firmware custom 8311 déjà flashé.
+
+Configurez votre carte réseau en IP fixe:
+
+IP: 192.168.1.2
+Masque: 255.255.255.0
+Passerelle: 192.168.1.1
+
+L'IP de l'ONT: 192.168.1.10
+
+Ici, l'interface web est... en chinois. Pas de panique, le SSH est notre ami !
+
+Ouvrez votre terminal et connectez-vous: ssh root@192.168.1.10
+
+Ici, on va droit au but pour injecter le numéro de série récupéré sur la
+Livebox:
+
+Configuration du Serial Number GPON:
+set_serial_number SMBS12345678
+
+Modification de l'ID matériel si nécessaire:
+sfp_i2c -i 7 -s "ABCD"
+
+On sauvegarde et on redémarre le module proprement:
+reboot
+
+
+-- 0x5: Configuration d'OpenWrt --
+
+Une fois le module SFP configuré, on le débranche du PC et on l'insère dans
+le port SFP+ (eth2) du Banana Pi BPI-R4.
+
+Et là... magie ? Pas encore il faut d'abord configurer OpenWrt.
+
+Rendez-vous sur le Firmware Selector d'OpenWrt et recherchez votre matériel:
+
+Banana Pi BPI-R4 -> téléchargez l'image SD CARD IMG
+
+Flashez l'image sur une carte SD avec Rufus (Windows) ou en CLI:
+
+sudo dd if=openwrt-24.10.5-mediatek-filogic-bananapi_bpi-r4-sdcard.img
+of=/dev/sda bs=4M status=progress
+
+Insérez la carte SD, démarrez le BPI-R4. L'interface LuCI est accessible sur
+192.168.1.1 sans mot de passe par défaut.
+
+Première chose à faire, définir un mot de passe fort. Pas 123456789, ni
+Belfort1995*. Un vrai.
+
+Récupérer vos credentials FTI
+
+Vous aurez besoin de votre login/mot de passe FTI pour générer l'option 90
+d'authentification Orange.
+
+Si vous avez bien pris les screenshots du début plus besoin d'aller dans
+l'interface d'administration de votre Livebox.
+
+Le login FTI visible dans l'interface admin de la Livebox -> Paramètres avancés
+-> Informations système -> Internet.Pour le mot de passe FTI, il faut appeler le
+3900.
+
+Prévoyez un bon café et votre meilleur déstressant, l'appel sera une longue
+route sinueuse. Voici un petit speech qui vous fera gagner un peu de temps:
+"Bonjour, je dois déplacer mon boitier fibre suite à des travaux, il me
+faudrait le mot de passe FTI de ma ligne." Personnellement j'y suis allé en
+mode bourrin, comptez ~15 min car les conseillers ne savent souvent pas ce
+que c'est.
+
+Une fois le login/mdp en main (ex: fti/exemple / exemple), rendez-vous sur le
+générateur d'option 90 de kgersen https://jsfiddle.net/kgersen/3mnsc6wy/ pour
+générer votre chaîne d'authentification.
+
+Vous obtiendrez quelque chose comme:
+
+00000000000000000000001a0900000558010341010D6674692F6578656D706C653c12...
+
+Gardez-la précieusement, elle sera injectée dans la config WAN.
+
+Configuration des interfaces (/etc/config/network)
+
+Sur le BPI-R4, l'interface WAN physique est eth2. Sur d'autres
+routeurs elle peut s'appeler eth0, eth1 ou wan. Vérifiez via LuCI si besoin.
+
+Interface LAN
+
+config interface 'lan'
+option proto 'static'
+option ipaddr '192.168.1.1'
+option netmask '255.255.255.0'
+option ip6assign '64'
+option ip6ifaceid '::bad'
+option device 'br-lan'
+
+Device VLAN 832
+
+config device
+option type '8021q'
+option ifname 'eth2'
+option vid '832'
+option name 'eth2.832
+option macaddr 'DE:AD:BE:EF:HG.20' #votre @mac pour ip static
+list egress_qos_mapping '1:0'
+list egress_qos_mapping '0:6'
+list egress_qos_mapping '6:6'
+
+Interface WAN IPv4
+
+config interface 'wan4'
+option proto 'dhcp'
+option device 'eth2.832'
+option hostname '*'
+option broadcast '1'
+option norelease '1'
+option vendorid 'sagem'
+option reqopts '1 3 6 15 28 51 58 59 90 119 125'
+option sendopts '77:2b46535644534c5f6c697665626f782e496e7465726e65
+742e736f66746174686f6d652e4c697665626f7836 90:00000000000000000000
+001a0900000558010341010D6674692F6578656D706C653c1231323334353637383
+9303132333435360313414b4685de7cee5a7f6bb2fe622e01134d'
+option clientid 'DEADBEEFHG20)' #votre @mac pour ip static
+
+Interface WAN IPv6
+
+config interface 'wan6'
+option proto 'dhcpv6'
+option device 'eth2.832'
+option reqprefix 'auto'
+option reqaddress 'none'
+option defaultreqopts '0'
+option sendopts '11:00000000000000000000001a0900000558010341010D6674
+692F6578656D706C653c12313233343536373839303132333435360313414b4685d
+e7cee5a7f6bb2fe622e01134d 15:FSVDSL_livebox.Internet.softathome.Liv
+ebox6 16:0000040e0005736167656d 17:000005580006000e495056365f5245
+51554553544544'
+option reqopts '11 17 23 24'
+option noclientfqdn '1'
+option noacceptreconfig '1'
+option clientid '00030001DEADBEEFHG20' #00030001 + @mac
+
+Mapping des flux L2 (/etc/nftables.d/nft-prio6-rules.include)
+
+Ce fichier gère la priorisation du trafic (802.1p CS6) attendue par Orange:
+
+vi /etc/nftables.d/nft-prio6-rules.include
+
+oifname "eth2.832" counter meta priority set 0:1
+oifname "eth2.832" ip protocol icmp counter meta priority set 0:6
+oifname "eth2.832" ip protocol igmp counter meta priority set 0:6
+oifname "eth2.832" udp dport 67 counter meta priority set 0:6
+oifname "eth2.832" udp dport 547 counter meta priority set 0:6
+oifname "eth2.832" ip protocol icmpv6 counter meta priority set 0:6
+
+Configuration du firewall (/etc/config/firewall)
+
+Inclusion des règles nftables
+
+config include 'orange_rules'
+option enabled '1'
+option type 'nftables'
+option path '/etc/nftables.d/nft-prio6-rules.include'
+option position 'chain-append'
+option chain 'mangle_postrouting'
+
+Zones WAN
+
+config zone
+option name 'wan'
+option output 'ACCEPT'
+option family 'ipv4'
+list network 'wan4'
+option forward 'DROP'
+option masq '1'
+option input 'DROP'
+
+config zone
+option name 'wan6'
+option input 'DROP'
+option output 'ACCEPT'
+option forward 'DROP'
+option family 'ipv6'
+list network 'wan6'
+list device 'eth2.832'
+
+Règles de filtrage
+
+config rule
+option name 'Allow-DHCP-Renew'
+option src 'wan'
+option proto 'udp'
+option dest_port '68'
+option target 'ACCEPT'
+option family 'ipv4'
+
+config rule
+option name 'Allow-Ping'
+option src 'wan'
+option proto 'icmp'
+option icmp_type 'echo-request'
+option family 'ipv4'
+option target 'ACCEPT'
+
+config rule
+option name 'Allow-IGMP'
+option src 'wan'
+option proto 'igmp'
+option family 'ipv4'
+option target 'ACCEPT'
+
+config rule
+option name 'Allow-DHCPv6'
+option proto 'udp'
+option dest_port '546'
+option family 'ipv6'
+option target 'ACCEPT'
+option src 'wan6'
+list src_ip 'fc00::/6'
+list dest_ip 'fc00::/6'
+
+config rule
+option name 'Allow-MLD'
+option proto 'icmp'
+option family 'ipv6'
+option target 'ACCEPT'
+option src 'wan6'
+list src_ip 'fe80::/10'
+
+config rule
+option name 'Allow-ICMPv6-Input'
+option proto 'icmp'
+option limit '1000/sec'
+option family 'ipv6'
+option target 'ACCEPT'
+list icmp_type 'bad-header'
+list icmp_type 'destination-unreachable'
+list icmp_type 'echo-reply'
+list icmp_type 'echo-request'
+list icmp_type 'neighbour-advertisement'
+list icmp_type 'neighbour-solicitation'
+list icmp_type 'packet-too-big'
+list icmp_type 'router-advertisement'
+list icmp_type 'router-solicitation'
+list icmp_type 'time-exceeded'
+list icmp_type 'unknown-header-type'
+option src 'wan6'
+
+config rule
+option name 'Allow-ICMPv6-Forward'
+option dest '*'
+option proto 'icmp'
+option limit '1000/sec'
+option family 'ipv6'
+option target 'ACCEPT'
+list icmp_type 'bad-header'
+list icmp_type 'destination-unreachable'
+list icmp_type 'echo-reply'
+list icmp_type 'echo-request'
+list icmp_type 'packet-too-big'
+list icmp_type 'time-exceeded'
+list icmp_type 'parameter-problem'
+list icmp_type 'unknown-header-type'
+option src 'wan6'
+
+Forwarding
+
+config forwarding
+option src 'lan'
+option dest 'wan'
+
+config forwarding
+option src 'lan'
+option dest 'wan6'
+
+DHCP & Router Advertisement (/etc/config/dhcp)
+
+config dhcp 'lan'
+option interface 'lan'
+option start '100'
+option limit '59'
+option leasetime '12h'
+option dhcpv4 'server'
+option ra 'server'
+list ra_flags 'none'
+
+Une fois tout configuré, branchez le SFP dans le port eth2, puis connectez
+votre fibre. Vous pouvez maintenant débrancher la Livebox définitivement.
+
+Pour vérifier que tout est bien remonté:
+ifstatus wan4
+ifstatus wan6
+
+J'ai également ajouté un petit ventilateur et un dissipateur thermique sur le
+SFP pour éviter la surchauffe en fonctionnement continu. Fortement
+recommandé...
+
+Cette configuration est largement inspirée du travail de Ubune sur le forum
+lafibre.info, une mine d'or pour tout ce qui touche au bypass Orange. La
+configuration TV Orange (VLAN 840 + igmpproxy) n'est pas couverte ici, je
+n'utilise pas la télé d'Orange. Si c'est votre cas, la doc complète est
+disponible sur le même forum.
+
+
+-- 0x6: Segmentation réseau --
+
+Disposant d'un switch manageable dans mon homelab, j'ai voulu segmenter le
+réseau proprement. C'est une bonne pratique niveau sécurité, chaque type
+d'équipement vit dans sa propre bulle, avec des droits d'accès strictement
+définis.
+
+Segmentation réseau par VLAN:
+
+VLAN ID : 10
+Nom     : ADMIN
+Cible   : Equipements admin
+Droits  : Accès total (SSH, WebUI, Console switch)
+
+VLAN ID : 20
+Nom     : USERS
+Cible   : Famille, appareils non-critiques
+Droits  : WAn + accès restreint SRV/apps
+
+VLAN ID : 30
+Nom     : SERVERS
+Cible   : SRV, Docker, VMs
+Droits  : Isolé - parle uniquement à ADMIN et USERS via firewall
+
+VLAN ID : 40
+Nom     : IOT
+Cible   : Ampoules, prises, caméras
+Droits  : Pas d'accès wan
+
+VLAN ID : 50
+Nom     : GUEST
+Cible   : Amis / Famille
+Droits  : Wan uniquement (2.4GHz)
+
+VLAN ID : 999
+Nom     : BLACKHOLE
+Cible   : VLAN poubelle
+Droits  : Suppression du VLAN 1 par défaut
+
+Plan d'adressage:
+
+VLAN        : 10
+Nom         : ADM
+Sous-réseau : 10.0.10.0/24
+Gateway     : 10.0.10.1
+DHCP Range  : 10.0.10.50–150
+
+VLAN        : 20
+Nom         : USERS
+Sous-réseau : 10.0.20.0/24
+Gateway     : 10.0.20.1
+DHCP Range  : 10.0.20.50–150
+
+VLAN        : 30
+Nom         : SERVERS
+Sous-réseau : 10.0.30.0/24
+Gateway     : 10.0.30.1
+DHCP Range  : 10.0.30.50–150
+
+VLAN        : 40
+Nom         : IOT
+Sous-réseau : 10.0.40.0/24
+Gateway     : 10.0.40.1
+DHCP Range  : 10.0.40.50–150
+
+VLAN        : 50
+Nom         : GUEST
+Sous-réseau : 10.0.50.0/24
+Gateway     : 10.0.50.1
+DHCP Range  : 10.0.50.50–150
+
+Configuration vlan sur OpenWrt
+
+Ne créez pas tous les VLANs d'un coup. Commencez par le VLAN
+d'administration, c'est votre filet de sécurité. Tant que vous n'avez pas un
+accès stable dessus, ne touchez à rien d'autre.
+
+Créer la zone firewall admin
+
+Avant de créer l'interface, on crée d'abord la zone firewall qui lui sera
+associée. Dans Network -> Firewall ajoutez une zone admin avec les permissions
+souhaitées.
+
+admin => wan + wan6 : accept accept accept
+
+Sauvegardez simplement.
+
+Créer l'interface VLAN 10
+
+Dans Network -> Interfaces -> Add new interface:
+
+Nom: admin
+Protocole: Static address
+Device: br-lan.10
+
+Dans l'onglet General Settings:
+
+IPv4 address: 10.0.10.1
+Netmask: 255.255.255.0
+
+Dans l'onglet Firewall Settings:
+Assignez la zone admin créée à l'étape précédente.
+
+Dans l'onglet DHCP Server:
+Start : 100, Limit : 150, Lease time : 12h
+
+Tagged/untagged vlans
+
+Une fois notre interface ainsi que la zone crée, on vas attribuer le vlan sur
+notre interface br-lan.
+
++-----+-------------------------------+
+| VLAN ID | eth1 | lan1 | lan2 | lan3 |
++---------+---------------------------+
+|   10    |  T   |  U   |      |      | 
++---------+---------------------------+
+
+J'ai mis le vlan admin en untagged sur le port lan1 (temporairement) afin 
+de pouvoir reprendre la main plus facilement si la conf de mon switch n'est pas bonne.
+
+Simplement, un port untagged (ou port access) appartient à un seul VLAN. Les
+trames qui transitent sur ce port ne portent aucune balise 802.1Q.
+
+* Le switch ajoute/retire le tag de manière transparente.
+* L'équipement connecté (PC, imprimante, caméra IP…) n'a pas connaissance du
+  VLAN, il envoie et reçoit des trames Ethernet standard.
+
+Or, un port tagged (ou port trunk) transporte plusieurs VLANs simultanément.
+Chaque trame conserve sa balise 802.1Q afin que le destinataire sache à quel
+VLAN elle appartient.
+
+* Utilisé entre deux switches, entre un switch et un routeur, ou vers un
+  hyperviseur.
+* L'équipement connecté doit comprendre le standard 802.1Q.
+
+Sauvegardez et appliquez.
+
+Accès via le VLAN admin
+
+Passez votre PC en IP statique:
+
+IP: 10.0.10.10
+Masque: 255.255.255.0
+Gateway: 10.0.10.1
+
+Puis accédez à http://10.0.10.1. Si LuCI répond, vous avez un accès sécurisé
+et vous ne perdrez plus jamais la main.
+
+Vous pouvez maintenant déployer les VLANs restants (USERS, SERVERS, IOT,
+GUEST) en répétant la même procédure pour chacun.
+
+
+-- 0x7: Vue finale de la config --
+
+Une fois tous les VLANs créés, voici à quoi ressemble le tableau de bord
+LuCI:
+
+Interfaces: 
++----------------------+----------------+----------------+
+| interface            | protocol       | IPv4           | 
++----------------------+--------+-------+----------------+
+| lan -> br-lan        | static address | 192.168.1.1/24 |
++----------------------+----------------+----------------+
+| admin -> br-lan.10   | static address | 10.0.10.1/24   |
++----------------------+----------------+----------------+
+| users -> br-lan.20   | static address | 10.0.20.1/24   |
++----------------------+----------------+----------------+
+| servers -> br-lan.30 | static address | 10.0.30.1/24   |
++----------------------+----------------+----------------+
+| iot -> br-lan.40     | static address | 10.0.40.1/24   |
++----------------------+----------------+----------------+
+| guest -> br-lan.50   | static address | 10.0.50.1/24   |
++----------------------+----------------+----------------+
+| wan -> eth2.832      | DHCP client    |                |
++----------------------+----------------+----------------+
+| wan6 -> eth2.832     | DHCPv6 client  |                |
++----------------------+----------------+----------------+
+
+
+Firewall zones:
++----------------------+--------+--------+-----------------------+
+| zone forwards        | input  | output |  intra zone forward   |
++----------------------+--------+--------+-----------------------+
+| admin -> wan, wan6   | accept | accept |       accept          |
++----------------------+--------+--------+-----------------------+
+| users -> wan, wan6   | reject | accept |       reject          |
++----------------------+--------+--------+-----------------------+
+| servers -> wan, wan6 | reject | accept |       reject          |
++----------------------+--------+--------+-----------------------+
+| iot -> all           | reject | reject |       reject          |
++----------------------+--------+--------+-----------------------+
+| guest -> wan, wan6   | reject | accept |       reject          |
++----------------------+--------+--------+-----------------------+
+| wan -> all           | reject | accept | reject +masquerading  |
++----------------------+--------+--------+-----------------------+
+| wan6 -> all          | reject | accept | reject +masquerading  |
++----------------------+--------+--------+-----------------------+
+
+Chaque zone a ses règles de forwarding adaptées (admin ->
+tout, guest-> wan uniquement, iot -> isolé).
+
+Bridge lan VLAN filtering: 	
++-----+-------------------------------+
+| VLAN ID | eth1 | lan1 | lan2 | lan3 |
++---------+---------------------------+
+|   10    |  T   |      |      |      | 
++---------+---------------------------+
+|   20    |  T   |      |      |      | 
++---------+---------------------------+
+|   30    |  T   |      |      |      | 
++---------+---------------------------+
+|   40    |  T   |      |      |      | 
++---------+---------------------------+
+|   50    |  T   |      |      |      | 
++---------+---------------------------+
+
+
+-- 0x8: Conclusion --
+
+Et voilà, la Livebox dort dans un carton et c'est vous qui êtes aux commandes.
+
+Ce projet n'est qu'une base. Il y a encore beaucoup à explorer:
+AdGuard Home pour le DNS filtering et le blocage pub au niveau réseau.
+WireGuard + Jumpserver pour un VPN maison et accéder à votre infra depuis
+l'extérieur.
+Grafana + Prometheus pour avoir des métriques sur votre trafic réseau.
+Suricata pour de la détection d'intrusion (IDS/IPS).
+Whitelists firewall: seuls certains hôtes ou ports sont autorisés.
+banIP: filtrage par ASN, pays et IPs malveillantes (équivalent pfBlocker-NG
+sous OpenWRT).
+Stack ELK: analyse forensique des logs via une VM de journalisation dédiée.
+Squid Proxy: proxy HTTP avec authentification par utilisateur ou par
+application.
+Wazuh pour m'entraîner aux action blue team: détection, alertes, corrélation
+d'events.
+
+Un grand merci à Ubune sur lafibre.info pour la base de config Orange, à
+MshBidb pour le script EEPROM et à la communauté 8311 pour le travail
+remarquable sur les firmwares ONU.
+
+Cet article est ma toute première contribution à un zine, merci à Beemo de
+m'avoir laissé cette chance.
+
+Des questions ? Des galères ? N'hésitez pas à rejoindre le discord HackGyver
+2.0. (https://discord.gg/P6dj5ayr44)
+
+-- EOF --

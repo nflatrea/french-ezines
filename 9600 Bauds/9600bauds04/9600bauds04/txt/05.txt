@@ -1,0 +1,509 @@
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   	
+
+┌────────────────────────────────┐
+│ ISSUE No 4 - Aout 2026  05.TXT └─────────────────────────────────────────────┐
+| leHACK 2026 - Brave New World                                                |
+| Beemo <nflatrea@mailo.com>                                                   |
+| GRENOBLE HACKERSPACE                                                         |
+└──────────────────────────────────────────────────────────────────────────────┘
+   __        __                                                  __        __  
+  /  \_====_/  \                                                /  \_====_/  \ 
+ ( (\ ' 00 ` /) )                                              ( (\ ' 00 ` /) )
+  \__/======\__/                                                \__/======\__/ 
+      ||||||                                                        ||||||    
+      |`||/                                                         |||||:     
+      ||||\                                                         \||||\     
+      ||||||                                                        /|||||    
+     (======)                            *                         (======)  
+      ||||||                                                        ||||||                                                                                  
+      |/||`|                __     __  _____   ________ __          |/||`|  
+      ||||||               / /__  / / / /   | / ____/ //_/          |||||| 
+      ||||||              / / _ \/ /_/ / /| |/ /   / ,<             |||!||  
+      ||||||             / /  __/ __  / ___ / /___/ /| |            ||||||  
+      \|||||            /_/\___/_/ /_/_/  |_\____/_/ |_|            :|||||  
+      /|||||            ..:. .  . .:. ..... . ..:.. .  .            |||||/   
+      ||||||            2026 ~ b r a v e n e w w o r l d            ||||||  
+      ||`|||            . ::.  .:. .  .:.  .   ... ..:.             ||`|||                                                                                  
+      \||||'                                                        \||||'                                
+      |/||`|                  TRiP REPoRT :: Beemo                  |/||`|    
+     (======)                                                      (======)   
+      ||||||                                                        |||||/    
+      ||||||                                                        |||||\       
+      ||`|||                                                        ||`|||    
+      \||||'                                                        \||||'    
+        .| |                                                          .| |    
+      :/| |.                                                        :/| |.    
+          .                                                            .    
+        :                                                             :       
+
+TLDR
+
+J'ai pas beaucoup participé autrement qu'en faisant le pitre sur scène,
+Beaucoup trop de travail pour une année de plus à Paris. Le thème était
+sympa, j'ai pu recroiser du monde et on as surtout pêter les scores
+d'épuisement entre un workshop, une présentation et le tout nouveau village
+hardware, leLAB. Bref une année mémorable :P
+
+INTRo
+
+Cette année, leHACK nous a pondu un thème bien ambitieux BRAVE NEW WORLD;
+
+Perso, j'ai surtout retenu que c'était l'occasion de monter voir les copains.
+Année particulière tout de même car en plus de faire un Workshop, j'ai eu 
+l'occasion de faire une présentation (R4d1o_P1r4t3) et de participer à l'orga
+d'un tout nouveau village hardware avec Tcccorp, Virtu, Tix, Prom', orwen, 
+7h30th3r0n3, erdnaxe, Scttpr, Dr4s1l et les autres que j'aurais oublié
+
+Comme je bosse (oui choquant), je suis arrivé sur Paris quelques jours avant,
+profitant d'une mission sur place. J'ai pu négocier mon 26 et 27 juin, j'ai une
+partie du AirBnB qu'est gracieusement payé et le train qui par chance m'est
+offert par l'équipe de HzV
+
+Avec un autre membre Hackerspace on c'est décidé à monter un maximum de materiel
+pour leLAB, alors j'ai bourré deux gros sacs à dos de matos, et quand j'ai vu 
+que ça rentrait pas, j'ai balancé le reste dans une caisse. 
+
+Résulat des trucs apportés :
+
+	Matériel de mesure
+	::::::::::::::::::	
+	- 5 multimètres C.A 5233
+	- 6 oscillos Textronix TDS 1022 + probes
+	- 1 set de PCBite Probes x4
+	- 3 SDRs (RTL-SDR, HackRF et HydraSDR)
+	- 5 antennes + amplis 20dB 
+	- 1 set de micro tournevis iFixit
+
+	Interfaces
+	::::::::::
+	- 1 PicoGlitcher v3 
+	- 1 Bus Pirate v5 
+	- 10 CH340/CH341 + leurs princes 
+	- 2 STL-Link v2
+	- 5 analyseurs logiques 8CH
+
+	Targets
+	:::::::
+	- 9 routeurs Linksys WRT54GL (classiques, indémodables)
+	- 2 GuD PLC
+	- 1 Neufbox NB6WAC 
+	
+	Et d'autres merdouille IoT dont j'ai plus idée....
+
+Avec mes petites magouilles j'en suis revenus pour :
+
+	- 0€ de train (Un grand merci à HzV :D)
+	- 480€ pour 8 jours à Argenteuil (cave humide, puante, mais bon marché)
+	- ~80€ de tickets de métro
+
+A mon arrivé, le matos était éparpillé entre BellY dans une caisse, et moi dans 
+un gros sac. J'ai laissé le materiel au AirBnB jusqu'au 25 juin, date à la 
+laquelle on c'est rejoins. Bon spoiler C'était lourd, il faisait tarpin chaud 
+et l'endroit ou j'était puait la pollution, les poubelles et l'humidité
+
+BRAVE new WORLD
+
+J-1 :: Préparation du village LeLAB
+
+Faut d'abord savoir que l'événement est à la Cité des sciences et de 
+l’industrie, 30 av Corentin Cariou, 75019 PARIS. Donc pas dutout à Argenteuil.
+
+Je suis à Gennevillier pour le travail et BellY arrive à Gare de Lyon. 
+
+Il à pas eu de chance, il pouvais pas s'amener en voiture, et à donc du tout 
+foutre dans un sac de sport et ce taper les 15 kilos de materiels. Merci encore 
+à lui pour le transport, qu'as dû se trimballer cette putain de caisse.
+
+On passe le portique sans trop de difficulté, rigolant évidemment de la 
+quantitée absurde de bordel par bien rangé dans des sacs pas bien fermés. On 
+rejoins donc le salon leHACK la veille de son ouverture pour poser les affaires.
+Pas d'bol on peux pas rentrer sans bracelet et on en as pas....Tccorp à bien 
+gentillement fait du social pour nous laisser rentrer et j'ai enfin eu la 
+possibilitée de poser les affaires. Je rejoins tout le monde dans la petite 
+salle et commence à poser mon merdier à côté de Virtu, juste devant l'entrée.
+
+NB: La salle est séparée en deux parties, ouvertes pour l'occasion. Une première
+rangée de tables sur la gauche en rentrant, une seconde en face et une dernière
+tout au fond à droite.
+
+       ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+       ┃          7h30th3r0n3   DVID            ┌───┐                 ┃
+       ┃             ┌──────┬──────┐            │░░░│                 ┃
+       ┃             │░░░░░░│░░░░░░│            │░░░│  Tables         ┃
+       ┃             └──────┴──────┘            ├───┤  d'Ateliers     ┃
+       ┃                                        │░░░│                 ┃
+       ┃      ┌───┐                             │░░░│                 ┃
+       ┃Virtu │░░░│                             └───┼──────┬──────┐   ┃
+       ┃      │░░░│                                 │░░░░░░│░░░░░░│   ┃
+       ┃Tix   ├───┤                                 └──────┴──────┘   ┃
+       ┃      │░░░│                                                   ┃
+       ┃CarIn │░░░│                                                   ┃
+       ┃aBox  ├───┤                                                   ┃
+       ┃      │░░░│           ┏━━━━━━━━━━━━━━━━━┓               ┌───┐ ┃
+       ┃Beemo │░░░│           ┃                 ┃         Gadget│░░░│ ┃
+       ┃      └───┘           ┃                 ┃               │░░░│ ┃
+       ┃                      ┃      ENTREE     ┃               └───┘ ┃
+       ┃                      ┃                 ┃                     ┃
+       ┗━━━━━━━━━━━━━━━━━━━━━━┛        ╔ ═ ═ ═ ■┗━━━━━━━━━━━━━━━━━━━━━┛
+                          ┌───┐                 ┌──────┬──────┐        
+              Un zozo qui │░░░│                 │░░░░░░│░░░░░░│        
+              comptais    │░░░│                 └──────┴──────┘        
+              les gens    └───┘                  Stickers et Goodies   
+
+
+Je savais pas trop comment m'organiser, je vois autour de moi et je sais pas 
+quoi foutre de mes 6 oscillos, 5 targets etc. Je décide donc de mettre mon vieux
+pc, une live ISO de DragonOS + HackRF en libre service devant la table. Derrière 
+5 oscillos empilé dont un branché channel 1 sur le RX d'un vieux LINKSYS dépioté
+et un CH340 branché au PC. Tccorp à la gentillesse de me filer deux gateways 
+Zigbee en plus que je vais pouvoir mettre dans ma pile de merdier.
+
+Pendant que BellY m'aide à organiser la table, je fous les multimètres sur la 
+grande table en plus des fers à souder posés par Tccorp
+
+On discute bien et on finis la journée et on profite de l'occasion pour
+s'incruster au repas des speakers. On fait connaissace, je recroise Biero qui va
+aussi présenter, Stéphane et deux nouvelle personnes que je connais pas.
+
+On reste jusque 23h avant ce ce rendre compte que notre dernier train est à 
+00h00 et on s'en va discrètement prendre le tram ;)
+
+je suis sorti de là avec :
+                                                  _
+                                                 {_}
+	2 pintes de bière dans le bide           |(|
+	Des oeufs mayonnaises en entrée         /   \    .    ' .
+	Un steak sauce poivre avec des frites   |.--|  '     \~~~/
+                                                ||  | \~~~/   \_/  
+	Je suis pas très viande, je mange       |'--|  \_/     Y 
+	majoritairement	végétarien mais         '-=-'   Y     _|_
+	y'avais du monde et y'avais que ça	       _|_jgs
+	donc j'ai pas fait le mec chiant					
+
+Résulat, on as pas payé un copec ;P
+
+
+
+J+0 :: Ateliers, ballade et découvertes
+
+Paris étant Paris, on as décider de ce lever un peu plus tôt pour arriver à 
+8h30 d'Argenteuil, pas d'bol, les train argenteuil paris est blindé le matin on 
+as du attendre bien un ou deux trains ava ot de pouvoir partir, saucissonné dans
+le wagon. Puis le métro, toujours saucissonné jusqu'à arriver à l'entrée.
+
+Cette fois, 8h00 du mat, la queue faisais au moins 150m on c'est perdu de vue 
+avec BellY et j'ai hésité à gruger Je suis finallement resté calme et j'ai
+attendu mon tour. Petit bracelet en poche, badge VIP/Speaker et bandoulière 
+j'ai pu filer directement dans la salle pour poser mes affaires, dire bonjour
+et me ballader. J'en ai profité pour préparer le laptop en libre service. J'ai
+démarré la machine sur DragonOS, allumé ./Simple_IMSI_catcher.py 
+(je savais qu'il passait donc petit clin d'oeil) avec une note en gros et gars, 
+
+                               __..._   _...__
+                          _..-"      `Y`      "-._
+                          \ N'AIE PAS |  UTILISE   /
+                          \\  PEUR..  | -MOI :P  //
+                          \\\         |         ///
+                           \\\ _..---.|.---.._ ///
+                        jgs \\`_..---.Y.---.._`//
+                             '`               `'
+
+Je suis ensuite allé faire les retrouvailles au stands en attendant mon tour 
+pour les ateliers. Tccorp préparais son atelier soudure, 7h30th3r0n3 avais monté
+son hall of shame, affichant tout les flippers avec le bluetooth allumé, Gadget 
+c'est assis dans un coin avec son oscillo et un fat écran et virtu m'a montré sa
+découpe vinyl qu'il as reprogrammé.
+
+Des ateliers étaient programmés toute la journée  
+
+--------------------------------------------------------------------------------
+::::::: LeLAB TRACK 
+::::::: Village Hardware Salle C et D niveau S2
+::::::: 26/06/2026
+--------------------------------------------------------------------------------
+
+10:00 - 12:00 	Badge Hackropole + Atelier mesures (par team badge FCSC)
+		- Soudure de badges lumineux capacitifs
+		- Découverte des oscillos, 
+		  analyseur logique, décodage de protocoles.
+	
+12:00 - 13:00	NFC/RFID Lab (Moi)
+		- Proxmark3, clone de badges, attaques NFC (replay,clone,fuzz…)
+		- Cracker plusieurs cibles, à plusieurs niveaux.
+
+13:00 - 14:00 	Hacking de Tag ESL via esp32 (par 7h30th3r0n3)
+		- Comprendre le protocole
+		- Flasher l'esp32 pour interagir avec le tag
+		- Exploration des différentes fonctionnalités
+
+14:00 - 17:00	Ateliers en continu (par team badge FCSC)
+		- Toujours du badge et des mesures
+
+17:00 - 18:00 	 Workshop "Explorer les signaux avec le DigiLab" (par tixlegeek)
+		- Flipper Zero, détection de grandeurs, retours sensoriels…
+
+
+En même temps quelques talks Salle 3 niveau S3
+
+
+14:00 - 14h50	Talk "IoT Horror Stories" (par Skander Belabed)
+15:00 - 16:00 	Talk "ESP32 au-delà des limites" (par 7h30th3r0n3)
+16:00 - 17:00	Talk "Offensive AI on ESP32" (par x42en & Ben Mz)
+
+--------------------------------------------------------------------------------
+
+
+10H30 
+
+Sorti de la cave, y'avais déja beaucoup, BEAUCOUP de monde, les stands 
+habituels, Mozilla, OSINT-FR, Synacktiv, Quarkslab, YWH, les keufs, etc
+J'en profite pour croiser d'anciens élèves à moi et camarades, boire un, puis 
+deux, puis trois cafés, manger des bonbons au CBD éviter les keufs et la DGSI 
+et faire connaissance avec de nouvelles têtes.
+
+12H00
+
+C'est le moment  de mon atelier "Lecture et clonage de badges RFID", 
+j'ai préparé un petit sac de cibles (clairement pas assez) avec un peu de tout,
+des badges iTag, du 125KHz, de l'ISO 1444-a, du Mifare Classic 1K et 4K, du
+DesFire, et deux trois faux positifs (j'ai mis des cartes sans rien et des 
+jetons de casino RFID ISO 18000 qui marche pas sur le pm3) et une dixaines de 
+clone chinois du proxmark3 rev2. L'objectif était d'apprendre à compiler et 
+flasher le firmware d'iceman sur la machine et d'utiliser les fonctionalitées 
+de base. Evidemment, sur les dix copies, on as eu quelques soucis de faux
+contacts sur au moins 3, 70% de fiabilitée
+
+La majoritée des gens on pus utiliser le materiel, reflash le proxmark et lire 
+le petit sac de cibles que j'avais. J'ai passé les dernières minutes restantes 
+à expliquer un petit peu le fonctionnement RFID/NFC, les différents tiroirs et 
+leurs utilitées, l'utilisation des clés A et B, le tiroir 0  et l'UUID etc..
+
+Je manquais clairement de cibles et donc demandé au copain Tr1stus1er de me 
+filer un coup de mains pour le lendemain.
+
+13H00
+
+Rien de spécial l'après midi, déja j'ai un peu la dalle à force de bouger et 
+j'ai compris qu'on avais droit à des paniers bouffe entant que conférenciers,
+j'ai oublier de les prendre, Tuxlu m'a donc gentilment acheter un bout de 
+sandwich et une boisson. Je me suis ensuite encore balladé, discuté, rencontrer 
+du monde. 
+
+Tix faisais des tours de salon avec son joli chapeau, Dr4Sil est arrivé, Des 
+skids d'Oteria ce sont amusés à  émettre comme des crados sur un canal PMR en 
+mode station de nombres, 70mW dans la gueule on c'est donc amusés à les 
+localiser. Pas de chance pour eux, quand on est allé les confronter z'avais pas
+fini de tout ranger. Faut dire que leur setup était crade, émettais trop fort 
+et pas de bonne qualitée.
+
+Je suis pas aller voir de conférences le premier jour, pas eu l'occasion.
+
+Nous sommes restés avec BellY jusque pas trop tard le soir, 23h pour pouvoir rentrer.
+
+J+1 :: Ateliers, beuverie et présentations
+
+Ok deuxième jour un peu plus compliqué, j'ai un atelier à leLAB à 12H, un 
+workshop hardware le soir et surtout une présentation début d'aprèm.
+En plus de ça je dois, voir la présentation d'Oros, voir la présentation de 
+Biero et d'autres si possible. Surtout que ce soir, on reste juqu'à pas d'heure 
+pour le Wargame et comme d'habitude, mon workshop est programmé fin de soirée.
+
+On ce lève ver 7H30, parti à 8H00, on loupe encore un ou deux trains, et on 
+arrives vers 9H30-10H00  au salon.
+
+Cette fois moins de monde, les salles étaient un peu plus respirable et on ce 
+bousculais pas. Je croise Tr1stus et l'emène poser son bazar, une grosse caisse
+de badges, cartes, tickets, ce que tu veux..à peut près 13ans de récup RFID dans
+une boite.
+
+Les ateliers changent un petit peu,
+
+--------------------------------------------------------------------------------
+::::::: LeLAB Track 
+::::::: Village Hardware (Salle C & D niveau S2 + Salle 3 niveau S3)
+::::::: 27/06/2026
+--------------------------------------------------------------------------------
+
+10h00 - 12h00    Badge Hackropole + Atelier mesures (toujours eux)
+		 - Soudure de badges lumineux capacitifs
+  		 - Découverte / expérimentation autour des instruments de labo
+    		 (oscilloscope MSO, analyse logique, décodage de protocoles, 
+    		 génération de signaux, glitches, etc.)
+
+12h50 - 13h00   (créneau continu) Workshop NFC/RFID Lab (par Beemo)
+  		- Proxmark3, clone de badges, attaques NFC…
+
+13h00 - 14h00   Workshop Hacking de Tag ESL via ESP32 (par 7h30th3r0n3)
+  		- Protocole, flashage ESP32, exploration des fonctionnalités…
+
+14h00 - 17h00   Workshop Badge Hackropole + Atelier mesures
+  		- Badge + mesures en continu
+
+17h00 - 18h00   Workshop "Explorer les signaux avec le DigiLab" (par tixlegeek)
+ 		 - Flipper Zero, détection de grandeurs, retours sensoriels…
+
+18h00 - 18h50   Talk "Cyberpunk Guide to hardware hacking" (par tixlegeek)
+ 		- Un guide simple pour se lancer dans le hardware hacking
+
+18h00 - 20h00   Workshop "Le top 5 des vulnérabilités IoT" (par yggdrasil)
+ 		- Compromettre un firmware / altérer des données /
+ 		élever des privilèges avec peu de matos
+20h00 - 21h00   Workshop "Outil de bypass de protection JTAG" (par Croute)
+ 		- Casser une protection (RDP) et récupérer le firmware en 
+ 		reproduisant des attaques réelles
+
+
+TALKS  Salle 3 niveau S3:
+
+
+10h00 - 10h20	Talk "KeyProxy" 
+		(par Rémi GUILLON)
+		- Keylogger physique et open-source conçu pour la Red Team
+		
+10h30 - 10h50   Talk "Getting your first CVE with hardware hacking" 
+		(Yassine Damiri)	
+  		- Obtenir ton premier CVE avec du hardware hacking 
+  		
+11h00 - 11h50   Talk "De la PS Vita au Flipper Zero" 
+		(par Jeremie Amsellem)
+  		- Aventure du hacking de consoles jusqu’à la création d’outils
+  		de sécurité
+  		
+12h00 - 12h50   Talk "Bootstrapping Kindle research"
+		(par Tanguy Dubroca)
+  		- Un nouveau jailbreak Kindle développé pour répondre 
+  		à une question personnelle
+  		
+19h00 - 19h55   Talk "Offensive AI on ESP32"
+		(par x42en & Ben Mz)
+  		- Vandal : Wi‑Fi, Bluetooth, Sub‑GHz, BadUSB… (démos prévues)
+
+--------------------------------------------------------------------------------
+
+j'ai encore l'occasion de bouger dans le salon, voir les copains.
+
+12H00 - je fais l'atelier, pas tout seul cette fois, a deux c'est quand même
+beaucoup plus fluide et j'ai enfin l'occasion de souffler un peu. Toujours 
+pareil, les petit défauts des copies chinoises ce font ressentir et il fallu 
+bricoler sur place. Même déroulement, même résultat, plutot content.
+
+J'apprend que mon atelier hardware est programmé pour 21H00 et que ma 
+présentation est à 17H00 à l'amphithéatre Gaston Berger. Biero et L0Key font 
+leur présentation vers 15h50, non filmée et Oros fait sa présentation à 18H30
+
+L'aprèm j'en profite pour terminer mes slides, quelques coquilles à corriger et
+une ou deux slides à rajouter. Cette année je parle, comme à mon habitude, de 
+piratage radio, une petite introduction à ce qu'est techniquement la radio, le
+vocabulaire et les différents types d'attaques.
+
+15H50 
+
+Biero et L0key on décidé de pas filmer la présentation, et par flemme je vais 
+pas détaillé ce qui a été dis, z'aviez qu'à être là, mais en gros, c'est la
+mise sous les projecteurs d'un groupe crack/warez ControlsNothing dont X fait
+parti. Objectif simple, cracker des logiciels industriels et les méthodes de 
+protection par mot de passe des projets. La présentation expliquait les
+différents outils qu'on as eu l'occasion de reverse / crack et un petit 
+narratif du pourquoi du comment qu'X à fait ça. AkA: y'a un marché au vietnam
+qui revend des projets volé protégés par mot de passe, et pour baiser le 
+marché, X c'est mis en tête de publier ça gratos.
+
+L0key à présenter les deux trois outils qu'il à eu l'occasion de reverse et 
+cracker et Biero nous as fait un joli narratif sur le Warez vietnamien
+
+17H00
+
+Après la présentation de biero, viens celle de Virtu que je ne vais pas pouvoir
+voir car je doit me préparer. Je descend dans la succursalle et la régie ou on
+le colle le micro sur la bouche, la batterie au cul, on me tripote tout le long
+pour brancher tout ça et je doit attendre mon tour sans trop bouger.
+
+La présentation en elle est même plutôt courte, là ou d'habitude je prend mon 
+temps (45min-1H30 à SecSea2K24) j'ai du speed à 25 min max et j'ai quand même
+réussi à me faire engeuler.
+
+J'ai eu pas mal de question intéressantes, pas mal d'étranger qui en ont profité
+pour faire leurs pub de club radio amateur, un ops bizarre qui m'a parlé de
+drones.
+
+Je me suis évidemment fait alpagué par deux trois personnes à la fin,
+un militaire qui fait de la reconnaissance de signaux et qu'éssayait de 
+m'embriguader dans ses emerdes, les brhackeuses, et Oros que je vois pour la
+première fois en physique. ça présentation est un peu similaire mais porté sur
+la 2G avec sont tool et une démo pas piqué des hannetons ;)
+
+19H00
+
+La présentation d'Oros terminée je vais enfin pouvoir boire. J'en profite pour
+me faufiler et taxer un max de pintes, tel le ras que je pense être avant de
+devoir retourner faire un atelier.
+
+21H00
+
+Je suis un peu éclaté, fatigué, et j'ai pommé une partie de mon materiel,
+J'arrive dans une salle après avoir stipulé qu'on pouvais pas être plus de 3 
+groupes, et voilà 15-20 personnes qui ce ramènes....Des multimètres qui
+tombe en rade et un ou deux transfos de LINKSYS que je retrouve pas.
+
+J'ai eu la visite fortuite de Snorky et son conpère, venu me soutenir.
+L'atelier ce passe bien, et j'en profite pour proposer deux trois cibles en plus
+
+00H00
+
+Ayé j'ai tout fini, je vais pouvoir m'éclatax! Je recroise Oros et Fox qui 
+discutent. Je croise Matthieu, Mozzie, WaWa et on fini la soiré à discuter
+tous ensemble. Je fait des allez retours toute la nuit entre le WarGame et le 
+coin dehors pour papoter et voir ou en sont les gens du CTF (je participe pas,
+la concurrence ça pue du cul)
+
+J+2 :: Mal au crâne + rangement
+
+On est dimanche, Il est 7H30 et on est pas couchés, on as passé la soirée au 
+Wargame et à la buvette, on c'est bien amusés, on as bien discutés, on as joués 
+au babyfoot et au air-hockey avec les zombies restants.
+
+Je vous avouerais que là, j'ai envie d'une seule chose, une douche et dodo. 
+
+On prend donc la décision, après avoir tout rangé dans leLAB et mis les affaires 
+dans  le sac, de ce barrer. Fin de séance et il me manque encore 
+deux/trois multimètre. On arrives à en retrouver deux dans les affaires avec 
+Tcccorp [^1]. Le dernier à été retrouvé un peu plus tard, j'était déja parti, 
+et soigneusement gardé par Tcccorp jusqu'à notre prochaine rencontre.
+
+On pack tout et on c'en va, éclatés et pas encore désaoulé pour ma part.
+Le voyage m'a paru extrèmement long, et après moutle galères, nous sommes 
+arrivés dans le AirBnB pour prendre notre douche et s'écrouler comme des 
+merdes dans le lit pour un dodo bien mérité.
+                                                             .---.        
+                                                            /  .  \      
+                                                           |\_/|   |     
+                                                           |   |  /|     
+     .-----------------------------------------------------------' |     
+    /  .-.     _______               ______  _   _  _____          |     
+   |  /   \   |__   __||     __     |  ____|| \ | ||  __ \         |     
+   | |\_.  |     | |   |__  /__\    | |__   |  \| || |  | |        |     
+   |\|  | /|     | |   |  \| ___|   |  __|  | . ` || |  | |        |     
+   | `---' |     | |   |  ||        | |____ | |\  || |__| |        |     
+   |       |     |_|        \__/    |______||_| \_||_____/         |     
+   |       |                                                      /      
+   |       |-----------------------------------------------------'       
+   \       |                                                             
+    \     /                                                              
+     `---'                                                              
+
+NoTes
+
+Merci à Mozzie et WaWa que j'ai croisé et fusillé du regard, certain de les
+avoirs déja croisés quelque part ;)
+
+[^1] Pendant tout l'événement j'ai pas arrêter de pômmer des affaires, des 
+multimètres et des targets RFID, à un tel point que Tcccorp à commencer à 
+m'appeler petit poucet.
+
+-- EOF --

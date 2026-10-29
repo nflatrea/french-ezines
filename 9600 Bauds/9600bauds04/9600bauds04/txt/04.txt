@@ -1,0 +1,99 @@
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   	
+
+┌────────────────────────────────┐
+│ ISSUE No 4 - Aout 2026  04.TXT └─────────────────────────────────────────────┐
+| SUMMER Trip :: LeHACK & Pass the Salt                                        |
+| Tuxlu                                                                        |
+| GRENOBLE HACKERSPACE                                                         |
+└──────────────────────────────────────────────────────────────────────────────┘
+
+::: LE HACK :::
+:::::::::::::::
+
+Nouvelle fournée de conférences sécu et en encore une fois le mot d'ordre est
+IA. Mais contrairement au Fosdem, ici on accueille plutôt nos nouveaux seigneurs
+AI. Comment utiliser l'IA, tools vibe-codés, intégrations MCP, slides 
+générées... On souffle parfois un peu. Heureusement, ces événements permettent 
+de rencontrer des vrais humains et avoir des conversations intéressantes! 
+
+Un des talks qui m'a le plus marqué d'ailleurs était non pas par son contenu 
+technique, mais pour sa mise en scène, avec des slides garantie fait main avec 
+des bouts de 3D crées sous Blender! "Permis d'illuminer toute la ville" par 
+MadSquirrel. La vulnérabilité assez simple (une application d'allumage 
+d'éclairage publique ouverte aux quatre vents) mais avec un jeu d'acteur 
+inspiré d'OSS 117. Je vous conseille le replay! (quand ils seront dispo, d'ici 
+6 mois peut-être :/ )
+
+Dans les autres talks, citons :
+
+- "RF : une menace invisible", sur la recherche de mouchards et l'isolation 
+contre l'écoute radio, de quoi rendre parano et vérifier ses faux plafonds.
+- "Trust Me, I’m A Shortcut", sur les méthodes pour cacher furtivement des 
+payloads malveillants dans les liens Windows. 
+- "Sighax deep dive", sur l'architecture de la Nintendo 3DS et son hacking.
+
+Je sais que ça ne se fait pas vraiment, mais je me permets d'exprimer une 
+déception, avec toutefois une note d'espoir: L'intitulé du talk sur Reversense 
+me mettait l'eau à la bouche: une plateforme open-source de hacking 
+d'applications mobile intégrant une myriade de scripts Frida pour 
+automatiquement obtenir une vue d'ensemble détaillée sur un projet. Hélas le 
+talk était assez peu clair sur l'usage concret de la plateforme. Il suffisait 
+de se rendre au workshop pour tester directement? Hélas non, le code était 
+dispo, mais il n'y avait aucune instruction sur comment le setup :(
+Dommage de ne pas profiter du momentum de l’événement pour publier proprement 
+le projet dans le même temps, mais j'espère de tout coeur qu'il sera disponible 
+d'ici la sortie de ce zine!
+
+Mais LeHack ça n'est clairement pas que la scène principale: le village hardware 
+était une super nouveauté (je dis pas ça parce que Beemo relis mon texte, promis
+;_; ). J'ai beaucoup aimé le challenge "bus CAN" de Quarkslab ou on peut se
+connecter au tableau de bord d'une voiture pour changer l'affichage de la radio,
+mais aussi de la vitesse ou des warnings!
+
+Mention aussi aux talks Osint très présents. Ça n'est pas mon domaine, mais j'ai
+eu très plaisir à regarder des pros de Geoguessr expliquer la "meta", comment
+ils remarquent qu'ils sont sur une route en Guinée car il y a du scotch sur le 
+rétroiseur de la voiture Google Maps.  Et ce à 2h du matin. (le CtF était 
+difficile , j'avais besoin d'une pause , ok? (T^T) )
+
+
+::: PASS THE SALT :::
+:::::::::::::::::::::
+
+Quittons donc la fournaise parisienne (à défaut de glaces, le goodies le plus 
+populaire de LeHack était un éventail! ) et profitons de la fraîcheur du Nord. 
+Agrémentées de bières, offertes par le "social event" de Pass the salt! Une 
+conférence aux thématiques particulièrement intéressante puis qu'elle mêle 
+sécurité et Open-source.
+
+Plein de talks très intéressants et variés. IA toujours, le "Director of 
+engineering" de chez Mozilla était là pour nous parler des merveilles de Claude 
+Mynthos sur Firefox... Et c'était au final plutôt boring: pas de détails sur 
+les vulns trouvées, mais juste une explication sur le setup des modèles et des 
+prompts utilisés. Le futur de notre boulot quoi. Youpi :/
+
+En talks qui valent le détour (et dont les replays sont dispos sur le site de 
+l'event):
+
+- "Oblivious HTTP", sur un protocole pour cacher notre adresse IP aux serveurs 
+en passant par des serveurs proxy. Encore une bonne initiative pour la vie privée!
+- "Bypassing BitLocker in under 5 min", qui démontre q'un Bitlocker sans pin 
+est un peu comme une serrure sur une porte qu'on peut démonter.
+
+J'ai aussi fait un workshop très intéressant sur Sighthouse, un système pour 
+simplifier la vie des reversers en détectant automatiquement les fonctions 
+connues, comme les libs de chiffrement. Projet techniquement impressionnant 
+avec un petit bémol: Pour que ça marche, il faut se créer une base de données 
+en compilant des tonnes de projets pour plein d'architectures, avec plein de 
+combinaisons de flags de compilations. La db des créateurs du projet a mis 6 
+mois à se compiler sur leur serveur... et elle n'est pas publique! Ils mettent 
+en place les instructions pour la build, alors faites chauffer votre serveur 
+local ^^' 
+
+Voilà , une semaine de conf bien remplie, rendez vous à Grehack pour ma part!

